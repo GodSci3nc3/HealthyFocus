@@ -22,7 +22,9 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <h1>Barra de navegación</h1>
+        <div className="h-[calc(100vh - 5 rem)]" > {children}</div>
+        
       </body>
     </html>
   );

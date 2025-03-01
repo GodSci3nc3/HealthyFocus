@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🚀 Plataforma Web de Bienestar Digital Personalizado
 
-## Getting Started
+## 📝 Descripción General
 
-First, run the development server:
+**HealthyFocus** tiene como objetivo ayudar a los usuarios a gestionar su tiempo frente a dispositivos digitales de manera eficiente y adaptada a sus necesidades individuales. A través de un enfoque centrado en el usuario, la plataforma permitirá la creación de perfiles personalizados, el seguimiento de rutinas diarias, la configuración de metas de uso digital y la obtención de recomendaciones basadas en hábitos detectados.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<img src = "https://github.com/user-attachments/assets/807e9781-5139-42c8-9fef-d97f174f6ea8" alt = "Portada de HealthFocus" style = "width: 600px; height: 600px;">
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎯 Funcionalidades Clave
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 🔑 Autenticación de Usuarios
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Registro e inicio de sesión seguro.
+- Recuperación de contraseñas.
 
-## Learn More
+### 👤 Perfil de Usuario Personalizado
 
-To learn more about Next.js, take a look at the following resources:
+- Información básica: nombre, edad, profesión, entre otros.
+- Preferencias sobre el uso del tiempo digital.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 📊 Gestión de Tiempos Digitales (CRUD)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Crear, leer, actualizar y eliminar registros de actividades diarias.
+- Especificar duración y tipo de actividad (trabajo, ocio, redes sociales, etc.).
 
-## Deploy on Vercel
+### 📈 Análisis y Recomendaciones
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Visualización de hábitos digitales mediante gráficos interactivos.
+- Sugerencias personalizadas para optimizar el uso del tiempo.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 🖥️ Dashboard de Bienestar Digital
+
+- Resumen semanal y mensual de la actividad.
+- Comparativa entre hábitos actuales y metas establecidas.
+
+## 🛠️ Tecnologías&#x20;
+
+- **Frontend:** React.js
+- **Backend:** Node.js con Express
+- **Base de Datos:** MySQL
+- **Estilizado:** TailwindCSS
+- **Gráficas:** Chart.js
+- **Despliegue:** A definir (posibles opciones: Vercel, Render)
+
+## 🌟 Valor del Proyecto
+
+- **Realizable y Escalable:** Comienza con funcionalidades mínimas viables (MVP) y expándete gradualmente.
+- **Relevante:** Aborda una problemática actual relacionada con el uso excesivo de dispositivos digitales.
+- **Tecnologías Modernas:** Incluye CRUD, autenticación, análisis de datos y herramientas actuales de frontend.
+- **Oportunidad de Monetización:** Potencial para características premium, publicidad o consultoría personalizada.
+
+##

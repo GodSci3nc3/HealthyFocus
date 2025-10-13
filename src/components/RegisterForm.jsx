@@ -3,6 +3,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
+import { useAuth } from '../hooks/useAuth';
 
 function RegisterForm() {
     const [user, setUser] = useState({
@@ -14,6 +15,7 @@ function RegisterForm() {
 
     const form = useRef(null);
     const router = useRouter();
+    const { login } = useAuth();
 
     const handleChange = (e) => {
         setUser({

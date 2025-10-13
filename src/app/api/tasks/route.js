@@ -81,3 +81,28 @@ export async function PUT(request) {
         );
     }
 }
+
+export async function DELETE(request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const taskId = searchParams.get('id');
+
+        if (!taskId) {
+            return NextResponse.json({ message: "ID de la tarea requerido" }, { status: 400 });
+        }
+
+        const result = await connection.query("DELETE FROM tasks WHERE id = ?", [taskId]);
+
+        if (result.affectedRows === 0) {
+            return NextResponse.json({ message: "Tarea no encontrada" }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: "Tarea eliminada exitosamente" });
+    } catch (error) {
+        console.log(error);
+        return NextResponse.json(
+            { message: "Error al eliminar tarea: " + error },
+            { status: 500 }
+        );
+    }
+}

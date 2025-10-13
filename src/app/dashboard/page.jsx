@@ -1,6 +1,8 @@
 "use client"
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { withAuth } from '@/hooks/useAuth';
+import CalendarComponent from '@/components/CalendarComponent';
 
 function Dashboard() {
     const [user, setUser] = useState(null);
@@ -293,6 +295,197 @@ function Dashboard() {
         }
     };
 
+    const deleteTask = async (taskId) => {
+        try {
+            const response = await fetch(`/api/tasks?id=${taskId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                loadData(user.id);
+            }
+        } catch (error) {
+            console.log('Error eliminando tarea:', error);
+        }
+    };
+
+    const createTask = async (projectId, taskTitle) => {
+        if (!taskTitle.trim()) return;
+
+        try {
+            const response = await fetch('/api/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: taskTitle,
+                    description: '',
+                    status: 'pendiente',
+                    project_id: projectId,
+                    user_id: user.id,
+                    due_date: new Date()
+                })
+            });
+
+            if (response.ok) {
+                loadData(user.id);
+            }
+        } catch (error) {
+            console.log('Error creando tarea:', error);
+        }
+    };
+
+    const updateProject = async (projectId, updates) => {
+        try {
+            const response = await fetch(`/api/projects?id=${projectId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updates)
+            });
+
+            if (response.ok) {
+                loadData(user.id);
+            }
+        } catch (error) {
+            console.log('Error actualizando proyecto:', error);
+        }
+    };
+
+    const updateTask = async (taskId, updates) => {
+        try {
+            const response = await fetch(`/api/tasks?id=${taskId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updates)
+            });
+
+            if (response.ok) {
+                loadData(user.id);
+            }
+        } catch (error) {
+            console.log('Error actualizando tarea:', error);
+        }
+    };
+
+    const updateNote = async (noteId, updates) => {
+        try {
+            const response = await fetch(`/api/notes?id=${noteId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updates)
+            });
+
+            if (response.ok) {
+                loadData(user.id);
+            }
+        } catch (error) {
+            console.log('Error actualizando nota:', error);
+        }
+    };
+
+    // Funciones de Drag and Drop
+    const handleDragStart = (e, item, type) => {
+        setDraggedItem(item);
+        setDraggedType(type);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', e.target.outerHTML);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    };
+
+    const handleDrop = (e, targetItem, targetType) => {
+        e.preventDefault();
+        
+        if (!draggedItem || !draggedType) return;
+
+        // Tareas solo se pueden mover entre proyectos o reordenar dentro del mismo proyecto
+        if (draggedType === 'task' && targetType === 'project') {
+            if (draggedItem.project_id !== targetItem.id) {
+                // Mover tarea a otro proyecto
+                updateTask(draggedItem.id, { project_id: targetItem.id });
+            }
+        } else if (draggedType === 'task' && targetType === 'task') {
+            // Reordenar tareas dentro del mismo proyecto
+            if (draggedItem.project_id === targetItem.project_id) {
+                reorderTasks(draggedItem, targetItem);
+            }
+        } else if (draggedType === 'project' && targetType === 'project') {
+            // Reordenar proyectos
+            reorderProjects(draggedItem, targetItem);
+        } else if (draggedType === 'note' && targetType === 'note') {
+            // Reordenar notas
+            reorderNotes(draggedItem, targetItem);
+        }
+        
+        // Reset del estado de drag
+        setDraggedItem(null);
+        setDraggedType(null);
+    };
+
+    const reorderTasks = (draggedTask, targetTask) => {
+        const projectTasks = tasks.filter(t => t.project_id === draggedTask.project_id);
+        const draggedIndex = projectTasks.findIndex(t => t.id === draggedTask.id);
+        const targetIndex = projectTasks.findIndex(t => t.id === targetTask.id);
+        
+        if (draggedIndex !== -1 && targetIndex !== -1) {
+            const reorderedTasks = [...projectTasks];
+            const [removed] = reorderedTasks.splice(draggedIndex, 1);
+            reorderedTasks.splice(targetIndex, 0, removed);
+            
+            // Actualizar el orden en el estado local
+            const updatedTasks = tasks.map(task => {
+                if (task.project_id === draggedTask.project_id) {
+                    const newIndex = reorderedTasks.findIndex(t => t.id === task.id);
+                    return { ...task, order_position: newIndex };
+                }
+                return task;
+            });
+            
+            setTasks(updatedTasks);
+        }
+    };
+
+    const reorderProjects = (draggedProject, targetProject) => {
+        const draggedIndex = projects.findIndex(p => p.id === draggedProject.id);
+        const targetIndex = projects.findIndex(p => p.id === targetProject.id);
+        
+        if (draggedIndex !== -1 && targetIndex !== -1) {
+            const reorderedProjects = [...projects];
+            const [removed] = reorderedProjects.splice(draggedIndex, 1);
+            reorderedProjects.splice(targetIndex, 0, removed);
+            
+            setProjects(reorderedProjects);
+        }
+    };
+
+    const reorderNotes = (draggedNote, targetNote) => {
+        const draggedIndex = notes.findIndex(n => n.id === draggedNote.id);
+        const targetIndex = notes.findIndex(n => n.id === targetNote.id);
+        
+        if (draggedIndex !== -1 && targetIndex !== -1) {
+            const reorderedNotes = [...notes];
+            const [removed] = reorderedNotes.splice(draggedIndex, 1);
+            reorderedNotes.splice(targetIndex, 0, removed);
+            
+            setNotes(reorderedNotes);
+        }
+    };
+
+    const handleDragEnd = () => {
+        setDraggedItem(null);
+        setDraggedType(null);
+    };
+
     const setMainTask = (task) => {
         setTodayTask(task);
         if (task.status === 'pendiente') {
@@ -306,7 +499,7 @@ function Dashboard() {
         <div className='min-h-screen bg-[#faf8f5] overflow-hidden'>
             {/* Contenedor principal con mejor espaciado */}
             <div className='pt-16 px-6'>
-                {/* Mensaje de Bienvenida - Animación Práctica 7 */}
+                {/* Mensaje de Bienvenida*/}
                 <h1 
                     className={`text-[#2c2c2c] font-semibold text-center mb-12 transition-all duration-[600ms] ease-out ${
                         isAnimationComplete 
@@ -314,16 +507,16 @@ function Dashboard() {
                         : 'text-7xl transform translate-y-[40vh] scale-150'
                     }`}
                 >
-                    ¡Bienvenido, {user?.name || 'Usuario'}!
+                    Bienvenido, {user?.name || 'Usuario'}
                 </h1>
 
-                {/* Layout Principal - Práctica 7 */}
+                {/* Layout Principal */}
                 <div className={`flex gap-8 max-w-7xl mx-auto transition-opacity duration-[600ms] delay-[1700ms] ${
                     isAnimationComplete ? 'opacity-100' : 'opacity-0'
                 }`}>
                 {/* Contenido Principal */}
                 <div className='flex-1'>
-                    {/* Enfoque de Hoy - Reemplaza el formulario de tareas */}
+                    {/* Enfoque de Hoy*/}
                     <div className={`bg-white p-6 rounded-lg shadow-lg mb-8 border border-[#e5e5e5] transition-all duration-[600ms] delay-[1700ms] ${
                         isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
                     }`}>
@@ -338,7 +531,7 @@ function Dashboard() {
                                     </h3>
                                     <button
                                         onClick={() => setTodaysFocus('')}
-                                        className='bg-[#2c2c2c] text-white px-6 py-2 rounded-lg hover:opacity-90 transition-all duration-300 font-medium'
+                                        className='bg-[#2c2c2c] text-white px-6 py-2 rounded-lg hover:bg-[#1a1a1a] transition-all duration-300 font-medium'
                                     >
                                         Cambiar Enfoque
                                     </button>
@@ -360,7 +553,7 @@ function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Tabla Principal - Enhanced Elegante */}
+                    {/* Tabla Principal  */}
                     <div className={`bg-white rounded-xl shadow-xl border border-[#e5e5e5] mb-4 transition-all duration-[600ms] delay-[1900ms] overflow-hidden ${
                         isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
                     }`}>
@@ -411,7 +604,15 @@ function Dashboard() {
                                         const projectTasks = tasks.filter(task => task.project_id === project.id);
                                         
                                         return [
-                                            <tr key={`project-${project.id}`} className='bg-[#f8f9fa] border-b-2 border-[#e5e5e5] hover:bg-[#f1f3f4] transition-all duration-300'>
+                                            <tr 
+                                                key={`project-${project.id}`} 
+                                                className='bg-[#f8f9fa] border-b-2 border-[#e5e5e5] hover:bg-[#f1f3f4] transition-all duration-300 cursor-move'
+                                                draggable
+                                                onDragStart={(e) => handleDragStart(e, project, 'project')}
+                                                onDragEnd={handleDragEnd}
+                                                onDragOver={handleDragOver}
+                                                onDrop={(e) => handleDrop(e, project, 'project')}
+                                            >
                                                 <td colSpan="5" className='p-4'>
                                                     <div className='flex items-center gap-3'>
                                                         <div className='w-8 h-8 bg-[#2c2c2c] rounded-lg flex items-center justify-center'>
@@ -428,17 +629,37 @@ function Dashboard() {
                                                     </div>
                                                 </td>
                                                 <td className='p-4'>
-                                                    <button
-                                                        onClick={() => deleteProject(project.id)}
-                                                        className='w-8 h-8 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 rounded-lg flex items-center justify-center transition-all duration-300 hover:shadow-md'
-                                                        title="Eliminar proyecto"
-                                                    >
-                                                        <i className="fas fa-trash text-sm"></i>
-                                                    </button>
+                                                    <div className='flex gap-2'>
+                                                        <button
+                                                            onClick={() => {
+                                                                const taskTitle = prompt('Nombre de la nueva tarea:');
+                                                                if (taskTitle) createTask(project.id, taskTitle);
+                                                            }}
+                                                            className='w-8 h-8 bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 rounded-lg flex items-center justify-center transition-all duration-300 hover:shadow-md'
+                                                            title="Añadir tarea"
+                                                        >
+                                                            <i className="fas fa-plus text-sm"></i>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => deleteProject(project.id)}
+                                                            className='w-8 h-8 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 rounded-lg flex items-center justify-center transition-all duration-300 hover:shadow-md'
+                                                            title="Eliminar proyecto"
+                                                        >
+                                                            <i className="fas fa-trash text-sm"></i>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>,
                                             ...projectTasks.map(task => (
-                                                <tr key={`task-${task.id}`} className='border-b border-[#f0f0f0] hover:bg-[#fafbfc] transition-all duration-300 group'>
+                                                <tr 
+                                                    key={`task-${task.id}`} 
+                                                    className='border-b border-[#f0f0f0] hover:bg-[#fafbfc] transition-all duration-300 group cursor-move'
+                                                    draggable
+                                                    onDragStart={(e) => handleDragStart(e, task, 'task')}
+                                                    onDragEnd={handleDragEnd}
+                                                    onDragOver={handleDragOver}
+                                                    onDrop={(e) => handleDrop(e, task, 'task')}
+                                                >
                                                     <td className='p-4 pl-12'>
                                                         <div className='flex items-center gap-3'>
                                                             <div className={`w-3 h-3 rounded-full ${
@@ -494,9 +715,11 @@ function Dashboard() {
                                                         </div>
                                                     </td>
                                                     <td className='p-4 text-[#666] text-base'>
-                                                        <div className='flex items-center gap-2'>
-                                                            <i className="fas fa-calendar-alt text-xs text-[#999]"></i>
-                                                            {task.due_date || 'Sin fecha'}
+                                                        <div className='w-48'>
+                                                            <CalendarComponent
+                                                                selectedDate={task.due_date ? new Date(task.due_date) : null}
+                                                                onDateSelect={(date) => updateTask(task.id, { due_date: date.toISOString().split('T')[0] })}
+                                                            />
                                                         </div>
                                                     </td>
                                                     <td className='p-4'>
@@ -532,7 +755,7 @@ function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Botón Crear Proyecto - Más Elegante */}
+                    {/* Botón Crear Proyecto */}
                     <button
                         onClick={createQuickProject}
                         className={`w-full bg-gradient-to-r from-[#2c2c2c] to-[#404040] hover:from-[#1a1a1a] hover:to-[#2c2c2c] text-white py-4 rounded-xl font-medium mb-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] delay-[2100ms] ${
@@ -546,7 +769,7 @@ function Dashboard() {
                     </button>
                 </div>
 
-                {/* Sidebar Notas - Estilo Práctica 7 */}
+                {/* Sidebar Notas*/}
                 <div className={`w-96 flex-shrink-0 transition-all duration-[600ms] delay-[2100ms] ${
                     isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
                 }`}>
@@ -557,7 +780,7 @@ function Dashboard() {
                     {/* Botón Crear Nota */}
                     <button
                         onClick={createQuickNote}
-                        className='inline-flex items-center text-[#2c2c2c] font-medium py-2 px-4 rounded-lg hover:bg-[#f8f9fa] transition-all duration-300 mb-4 border border-[#e5e5e5]'
+                        className='inline-flex items-center bg-[#2c2c2c] text-white font-medium py-2 px-4 rounded-lg hover:bg-[#1a1a1a] transition-all duration-300 mb-4'
                     >
                         <i className="fas fa-sticky-note mr-2"></i>Crear Nota
                     </button>
@@ -569,7 +792,15 @@ function Dashboard() {
                             const rotation = rotations[index % rotations.length];
                             
                             return (
-                                <div key={note.id} className={`bg-[#f8f9fa] border border-[#e5e5e5] p-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 relative transform ${rotation} hover:rotate-0 hover:scale-102 min-h-[140px] group`}>
+                                <div 
+                                    key={note.id} 
+                                    className={`bg-[#f8f9fa] border border-[#e5e5e5] p-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 relative transform ${rotation} hover:rotate-0 hover:scale-102 min-h-[140px] group cursor-move`}
+                                    draggable
+                                    onDragStart={(e) => handleDragStart(e, note, 'note')}
+                                    onDragEnd={handleDragEnd}
+                                    onDragOver={handleDragOver}
+                                    onDrop={(e) => handleDrop(e, note, 'note')}
+                                >
                                     <button
                                         onClick={() => deleteNote(note.id)}
                                         className='absolute top-2 right-2 text-red-400 hover:text-red-600 transition-all duration-300 opacity-0 group-hover:opacity-100 text-sm'
@@ -609,7 +840,7 @@ function Dashboard() {
                             localStorage.removeItem('currentUser');
                             router.push('/login');
                         }}
-                        className='bg-white border border-[#e5e5e5] text-[#666] hover:text-[#2c2c2c] hover:border-[#2c2c2c] px-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-md'
+                        className='bg-[#2c2c2c] border border-[#2c2c2c] text-white hover:bg-[#1a1a1a] px-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-md'
                     >
                         Cerrar Sesión
                     </button>
@@ -619,4 +850,4 @@ function Dashboard() {
     );
 }
 
-export default Dashboard;
+export default withAuth(Dashboard);

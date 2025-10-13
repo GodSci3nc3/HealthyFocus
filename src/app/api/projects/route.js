@@ -51,3 +51,32 @@ export async function POST(request) {
         );
     }
 }
+
+export async function DELETE(request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const projectId = searchParams.get('id');
+
+        if (!projectId) {
+            return NextResponse.json({ message: "ID del proyecto requerido" }, { status: 400 });
+        }
+
+        // Primero eliminar todas las tareas del proyecto
+        await connection.query("DELETE FROM tasks WHERE project_id = ?", [projectId]);
+        
+        // Luego eliminar el proyecto
+        const result = await connection.query("DELETE FROM projects WHERE id = ?", [projectId]);
+
+        if (result.affectedRows === 0) {
+            return NextResponse.json({ message: "Proyecto no encontrado" }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: "Proyecto eliminado exitosamente" });
+    } catch (error) {
+        console.log(error);
+        return NextResponse.json(
+            { message: "Error al eliminar proyecto: " + error },
+            { status: 500 }
+        );
+    }
+}

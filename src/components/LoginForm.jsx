@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '../hooks/useAuth';
 
 function LoginForm() {
     const [user, setUser] = useState({
@@ -11,6 +12,7 @@ function LoginForm() {
 
     const form = useRef(null);
     const router = useRouter();
+    const { login } = useAuth();
 
     const handleChange = (e) => {
         setUser({
@@ -34,7 +36,7 @@ function LoginForm() {
             if (res.ok) {
                 const data = await res.json();
                 console.log('Login exitoso:', data);
-                localStorage.setItem('currentUser', JSON.stringify(data.user));
+                login(data.user);
                 router.push('/dashboard');
             } else {
                 console.log('Error en login');

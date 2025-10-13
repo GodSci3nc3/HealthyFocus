@@ -48,13 +48,13 @@ function LoginForm() {
 
     return (
         <div>
-            <form className='px-8 py-10 w-full' onSubmit={handleSubmit} ref={form}>
+            <form className='w-full' onSubmit={handleSubmit} ref={form}>
                 <div className='mb-6'>
-                    <label htmlFor="email" className='block text-black text-base font-bold mb-2'>
+                    <label htmlFor="email" className='block text-[#2c2c2c] text-base font-medium mb-3'>
                         Email
                     </label>
                     <input 
-                        className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200 text-base' 
+                        className='w-full px-5 py-4 border border-[#e5e5e5] rounded-lg focus:outline-none focus:border-[#2c2c2c] transition-all duration-300 text-lg bg-white' 
                         type="email" 
                         id="email" 
                         name="email" 
@@ -65,11 +65,11 @@ function LoginForm() {
                 </div>
 
                 <div className='mb-8'>
-                    <label htmlFor="password" className='block text-black text-base font-bold mb-2'>
+                    <label htmlFor="password" className='block text-[#2c2c2c] text-base font-medium mb-3'>
                         Contraseña
                     </label>
                     <input 
-                        className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200 text-base' 
+                        className='w-full px-5 py-4 border border-[#e5e5e5] rounded-lg focus:outline-none focus:border-[#2c2c2c] transition-all duration-300 text-lg bg-white' 
                         type="password" 
                         id="password" 
                         name="password" 
@@ -81,16 +81,16 @@ function LoginForm() {
 
                 <button 
                     type="submit"
-                    className='w-full bg-[#8B0000] text-black font-bold py-3 px-4 rounded-lg hover:bg-opacity-80 transition-all duration-200 shadow-lg text-base mb-4'
+                    className='w-full bg-[#2c2c2c] text-white font-medium py-4 px-6 rounded-lg hover:bg-[#1a1a1a] transition-all duration-300 text-lg mb-4'
                 >
                     Iniciar Sesión
                 </button>
             </form>
             
             <div className='text-center'>
-                <p className='text-black text-base'>
+                <p className='text-[#666] text-base'>
                     ¿No tienes cuenta?{' '}
-                    <Link href="/register" className='font-bold underline hover:text-gray-700 transition-colors'>
+                    <Link href="/register" className='font-medium text-[#2c2c2c] hover:text-[#1a1a1a] transition-colors duration-300'>
                         Regístrate aquí
                     </Link>
                 </p>

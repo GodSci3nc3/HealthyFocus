@@ -295,87 +295,86 @@ function Dashboard() {
     if (!user) return <div>Cargando...</div>;
 
     return (
-        <div className='min-h-screen bg-gradient-radial from-[#ff5757] to-[#9e005d] flex'>
+        <div className='min-h-screen bg-[#faf8f5] flex'>
             {/* Main Content - 75% */}
-            <div className='flex-1 p-6'>
-                <div className='max-w-4xl mx-auto'>
-                    <h1 className='text-5xl font-black text-black text-center mb-8 font-bebas-neue tracking-wider flex items-center justify-center gap-3'>
-                        <i className="fas fa-bullseye text-6xl"></i>
-                        Enfoque de hoy
+            <div className='flex-1 p-8'>
+                <div className='max-w-5xl mx-auto'>
+                    <h1 
+                        className='text-5xl font-black text-[#2c2c2c] text-center mb-8'
+                        style={{
+                            fontFamily: 'Bebas Neue, cursive'
+                        }}
+                    >
+                        Enfoque de Hoy
                     </h1>
 
                     {/* Tarea del Día */}
-                    <div className='bg-black/20 backdrop-blur-sm rounded-2xl p-8 mb-8 min-h-[400px] flex flex-col justify-center items-center text-center'>
+                                        {/* Tarea del Día */}
+                    <div className='bg-white rounded-lg p-8 mb-8 min-h-[300px] flex flex-col justify-center items-center text-center border border-[#e5e5e5]'>
                         {todayTask ? (
                             <div>
-                                <h2 className='text-4xl font-bebas-neue tracking-wide text-black mb-4'>
+                                <h2 className='text-4xl font-semibold text-[#2c2c2c] mb-4' style={{fontFamily: 'Bebas Neue, cursive'}}>
                                     {todayTask.title}
                                 </h2>
-                                <p className='text-lg text-black/80 mb-6'>
+                                <p className='text-lg text-[#666] mb-6'>
                                     {todayTask.description || 'Sin descripción'}
                                 </p>
-                                <p className='text-sm text-black/60 mb-6'>
+                                <p className='text-sm text-[#666] mb-6'>
                                     Proyecto: {todayTask.project_name}
                                 </p>
                                 <div className='flex gap-4 justify-center'>
                                     <button
                                         onClick={() => updateTaskStatus(todayTask.id, 'completada')}
-                                        className='bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold flex items-center gap-2'
+                                        className='bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-medium transition-all duration-300'
                                     >
-                                        <i className="fas fa-check"></i>
                                         Completar
                                     </button>
                                     <button
                                         onClick={() => setTodayTask(null)}
-                                        className='bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold flex items-center gap-2'
+                                        className='bg-[#2c2c2c] text-white px-6 py-3 rounded-lg hover:bg-[#1a1a1a] font-medium transition-all duration-300'
                                     >
-                                        <i className="fas fa-sync"></i>
                                         Cambiar tarea
                                     </button>
                                 </div>
                             </div>
                         ) : (
                             <div>
-                                <h2 className='text-3xl font-bebas-neue tracking-wide text-black mb-4'>
+                                <h2 className='text-3xl font-semibold text-[#2c2c2c] mb-4' style={{fontFamily: 'Bebas Neue, cursive'}}>
                                     Selecciona tu enfoque de hoy
                                 </h2>
-                                <p className='text-black/80 mb-6'>
+                                <p className='text-[#666] mb-6'>
                                     Elige una tarea para concentrarte
                                 </p>
-                                <div className='flex items-center gap-2 text-red-600'>
-                                    <i className="fas fa-arrow-down text-2xl"></i>
-                                    <span className='font-bold'>Haz click en una tarea de abajo</span>
-                                </div>
+                                <p className='text-sm text-[#666]'>
+                                    Crea una tarea en la tabla de abajo o selecciona una existente
+                                </p>
                             </div>
                         )}
                     </div>
 
                     {/* Datatable - Proyectos y Tareas */}
-                    <div className='bg-white/15 backdrop-blur-sm rounded-xl p-6 mb-4 shadow-lg'>
+                    <div className='bg-white rounded-lg p-6 mb-4 border border-[#e5e5e5]'>
                         <div className='flex justify-between items-center mb-6'>
-                            <h3 className='text-3xl font-bebas-neue tracking-wide text-black flex items-center gap-3'>
-                                <i className="fas fa-list text-2xl"></i>
-                                Proyectos y tareas
+                            <h3 className='text-3xl font-semibold text-[#2c2c2c]' style={{fontFamily: 'Bebas Neue, cursive'}}>
+                                Proyectos y Tareas
                             </h3>
-                            <div className='flex gap-3'>
-                                <button
-                                    onClick={createQuickProject}
-                                    className='bg-red-600 text-white p-3 rounded-lg hover:bg-red-700 transition-all duration-200 shadow-md'
-                                    title="Nuevo Proyecto"
-                                >
-                                    <i className="fas fa-folder-plus text-lg"></i>
-                                </button>
-                            </div>
+                            <button
+                                onClick={createQuickProject}
+                                className='bg-[#2c2c2c] text-white px-4 py-2 rounded-lg hover:bg-[#1a1a1a] transition-all duration-300 font-medium'
+                                title="Nuevo Proyecto"
+                            >
+                                + Proyecto
+                            </button>
                         </div>
 
-                        <div className='overflow-x-auto max-h-[500px] overflow-y-auto bg-white/10 rounded-lg'>
-                            <table className='w-full text-base font-bebas-neue'>
-                                <thead className='bg-red-900/30 sticky top-0'>
+                        <div className='overflow-x-auto max-h-[400px] overflow-y-auto bg-[#faf8f5] rounded-lg border border-[#e5e5e5]'>
+                            <table className='w-full text-sm'>
+                                <thead className='bg-[#2c2c2c] text-white sticky top-0'>
                                     <tr>
-                                        <th className='text-left p-4 text-black font-bold tracking-wide'>Tipo</th>
-                                        <th className='text-left p-4 text-black font-bold tracking-wide'>Nombre</th>
-                                        <th className='text-left p-4 text-black font-bold tracking-wide'>Descripción</th>
-                                        <th className='text-left p-4 text-black font-bold tracking-wide'>Estado</th>
+                                        <th className='text-left p-4 font-medium'>Tipo</th>
+                                        <th className='text-left p-4 font-medium'>Nombre</th>
+                                        <th className='text-left p-4 font-medium'>Descripción</th>
+                                        <th className='text-left p-4 font-medium'>Estado</th>
                                         <th className='text-left p-4 text-black font-bold tracking-wide'>Info</th>
                                         <th className='text-left p-4 text-black font-bold tracking-wide'>Acción</th>
                                     </tr>
@@ -387,10 +386,9 @@ function Dashboard() {
                                         const progress = projectTasks.length > 0 ? (completedTasks.length / projectTasks.length) * 100 : 0;
                                         
                                         return [
-                                            <tr key={`project-${project.id}`} className='bg-red-600/25 border-b border-red-600/40 hover:bg-red-600/30 transition-all'>
+                                            <tr key={`project-${project.id}`} className='bg-white border-b border-[#e5e5e5] hover:bg-gray-50 transition-all duration-300'>
                                                 <td className='p-4'>
-                                                    <span className='bg-red-700 text-white px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 w-fit'>
-                                                        <i className="fas fa-folder"></i>
+                                                    <span className='bg-[#2c2c2c] text-white px-3 py-1 rounded text-xs font-medium'>
                                                         Proyecto
                                                     </span>
                                                 </td>
@@ -400,7 +398,7 @@ function Dashboard() {
                                                         value={project.name}
                                                         onChange={(e) => updateProjectField(project.id, 'name', e.target.value)}
                                                         onBlur={() => saveProject(project.id)}
-                                                        className='bg-transparent text-black font-bold border-none outline-none w-full text-lg placeholder-black/50'
+                                                        className='bg-transparent text-[#2c2c2c] font-medium border-none outline-none w-full placeholder-[#666]'
                                                     />
                                                 </td>
                                                 <td className='p-4'>
@@ -409,46 +407,45 @@ function Dashboard() {
                                                         value={project.description || ''}
                                                         onChange={(e) => updateProjectField(project.id, 'description', e.target.value)}
                                                         onBlur={() => saveProject(project.id)}
-                                                        className='bg-transparent text-black/80 border-none outline-none w-full placeholder-black/40'
+                                                        className='bg-transparent text-[#666] border-none outline-none w-full placeholder-[#666]'
                                                         placeholder="Sin descripción"
                                                     />
                                                 </td>
                                                 <td className='p-4'>
-                                                    <div className='bg-black/30 rounded-full h-3 w-24'>
+                                                    <div className='bg-[#e5e5e5] rounded-full h-2 w-20'>
                                                         <div 
-                                                            className='bg-red-600 h-3 rounded-full transition-all duration-300'
+                                                            className='bg-[#2c2c2c] h-2 rounded-full transition-all duration-300'
                                                             style={{width: `${progress}%`}}
                                                         ></div>
                                                     </div>
-                                                    <span className='text-sm text-black/70 font-bold'>{Math.round(progress)}%</span>
+                                                    <span className='text-xs text-[#666] mt-1 block'>{Math.round(progress)}%</span>
                                                 </td>
                                                 <td className='p-4'>
-                                                    <span className='text-sm text-black/70 font-bold'>{projectTasks.length} tareas</span>
+                                                    <span className='text-sm text-[#666]'>{projectTasks.length} tareas</span>
                                                 </td>
                                                 <td className='p-4'>
                                                     <div className='flex gap-2'>
                                                         <button
                                                             onClick={() => createQuickTaskForProject(project.id)}
-                                                            className='text-green-600 hover:text-green-800 p-1'
+                                                            className='text-green-600 hover:text-green-800 transition-colors duration-300 font-bold text-lg'
                                                             title="Nueva tarea"
                                                         >
-                                                            <i className="fas fa-plus-circle text-xl"></i>
+                                                            +
                                                         </button>
                                                         <button
                                                             onClick={() => deleteProject(project.id)}
-                                                            className='text-red-600 hover:text-red-800 p-1'
+                                                            className='text-red-600 hover:text-red-800 transition-colors duration-300 font-bold text-lg'
                                                             title="Eliminar proyecto"
                                                         >
-                                                            <i className="fas fa-trash text-lg"></i>
+                                                            ×
                                                         </button>
                                                     </div>
                                                 </td>
                                             </tr>,
                                             ...projectTasks.map(task => (
-                                                <tr key={`task-${task.id}`} className='bg-white/15 border-b border-white/30 hover:bg-white/25 cursor-pointer transition-all' onClick={() => setMainTask(task)}>
+                                                <tr key={`task-${task.id}`} className='bg-white border-b border-gray-200 hover:bg-gray-50 cursor-pointer transition-all duration-300' onClick={() => setMainTask(task)}>
                                                     <td className='p-4 pl-8'>
-                                                        <span className='bg-red-800 text-white px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 w-fit'>
-                                                            <i className="fas fa-tasks"></i>
+                                                        <span className='bg-gray-600 text-white px-2 py-1 rounded text-xs font-semibold'>
                                                             Tarea
                                                         </span>
                                                     </td>
@@ -532,41 +529,39 @@ function Dashboard() {
             </div>
 
             {/* Sidebar Notas - 25% */}
-            <div className='w-1/4 bg-black/10 backdrop-blur-sm p-4 border-l border-black/20'>
-                <div className='flex justify-between items-center mb-6'>
-                    <h3 className='text-2xl font-bebas-neue tracking-wide text-black flex items-center gap-2'>
-                        <i className="fas fa-sticky-note text-xl"></i>
-                        Notas rápidas
-                    </h3>
-                    <button
-                        onClick={createQuickNote}
-                        className='bg-yellow-500 text-black p-2 rounded-lg hover:bg-yellow-600 transition-all duration-200 shadow-md'
-                        title="Nueva nota"
-                    >
-                        <i className="fas fa-plus text-lg"></i>
-                    </button>
-                </div>
+            <div className='w-1/4 bg-white p-6 border-l border-[#e5e5e5]'>
+                <h3 className='text-2xl font-semibold text-[#2c2c2c] mb-6' style={{fontFamily: 'Bebas Neue, cursive'}}>
+                    Notas Rápidas
+                </h3>
+                
+                {/* Botón Crear Nota */}
+                <button
+                    onClick={createQuickNote}
+                    className='w-full bg-[#2c2c2c] text-white font-medium py-3 rounded-lg hover:bg-[#1a1a1a] transition-all duration-300 mb-6'
+                >
+                    + Nueva Nota
+                </button>
 
                 {/* Lista de Notas Post-it */}
                 <div className='space-y-3 overflow-y-auto max-h-96'>
                     {notes.map((note, index) => {
                         const postItColors = [
                             'bg-yellow-200 border-yellow-300',
-                            'bg-pink-200 border-pink-300', 
-                            'bg-blue-200 border-blue-300',
+                            'bg-blue-200 border-blue-300', 
                             'bg-green-200 border-green-300',
+                            'bg-pink-200 border-pink-300',
                             'bg-orange-200 border-orange-300'
                         ];
                         const colorClass = postItColors[index % postItColors.length];
                         
                         return (
-                            <div key={note.id} className={`${colorClass} p-4 rounded-lg border-2 shadow-md transform hover:rotate-1 transition-all duration-200 relative`}>
+                            <div key={note.id} className={`${colorClass} p-4 rounded-lg border-2 shadow-sm hover:shadow-md transition-all duration-300 relative transform hover:-rotate-1`}>
                                 <button
                                     onClick={() => deleteNote(note.id)}
-                                    className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 shadow-md'
+                                    className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition-colors duration-300'
                                     title="Eliminar nota"
                                 >
-                                    <i className="fas fa-times"></i>
+                                    ×
                                 </button>
                                 
                                 <input
@@ -574,7 +569,7 @@ function Dashboard() {
                                     value={note.title}
                                     onChange={(e) => updateNoteField(note.id, 'title', e.target.value)}
                                     onBlur={() => saveNote(note.id)}
-                                    className='bg-transparent text-black font-bold border-none outline-none w-full text-lg placeholder-black/50 mb-2'
+                                    className='bg-transparent text-[#2c2c2c] font-medium border-none outline-none w-full text-sm placeholder-[#666] mb-2'
                                     placeholder="Título"
                                 />
                                 
@@ -582,14 +577,10 @@ function Dashboard() {
                                     value={note.content}
                                     onChange={(e) => updateNoteField(note.id, 'content', e.target.value)}
                                     onBlur={() => saveNote(note.id)}
-                                    className='bg-transparent text-black/80 border-none outline-none w-full resize-none placeholder-black/40'
-                                    placeholder="Contenido..."
+                                    className='bg-transparent text-[#2c2c2c] border-none outline-none w-full resize-none placeholder-[#666] text-xs'
+                                    placeholder="Escribe tu nota..."
                                     rows="3"
                                 />
-                                
-                                <div className='flex justify-end mt-2'>
-                                    <i className="fas fa-thumbtack text-gray-600 text-sm"></i>
-                                </div>
                             </div>
                         );
                     })}

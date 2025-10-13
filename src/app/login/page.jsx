@@ -3,50 +3,70 @@ import { useState, useEffect } from 'react';
 import LoginForm from "@/components/LoginForm";
 
 function LoginPage() {
-    const [titleMoved, setTitleMoved] = useState(false);
+    const [animationPhase, setAnimationPhase] = useState('initial'); // 'initial', 'moved', 'complete'
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setTitleMoved(true);
-        }, 600);
+        // Fase 1: Título se mueve hacia arriba después de 2 segundos
+        const timer1 = setTimeout(() => {
+            setAnimationPhase('moved');
+        }, 2000);
 
-        return () => clearTimeout(timer);
+        // Fase 2: Mostrar contenido después de que termine la animación (0.6 segundos)
+        const timer2 = setTimeout(() => {
+            setAnimationPhase('complete');
+        }, 2600);
+
+        return () => {
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+        };
     }, []);
 
     return (
-        <div className='min-h-screen bg-gradient-radial from-[#ff5757] to-[#9e005d] p-4'>
-            <div className={`transition-all duration-700 ease-out ${
-                titleMoved 
-                    ? 'transform translate-y-0 scale-100' 
-                    : 'transform translate-y-[40vh] scale-150'
+        <div className="min-h-screen bg-[#faf8f5] relative overflow-hidden">
+            {/* Título con animación centrada */}
+            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-[600ms] ease-out ${
+                animationPhase === 'initial' 
+                    ? 'transform translate-y-0' 
+                    : 'transform -translate-y-[40vh]'
             }`}>
-                <h1 className='text-6xl md:text-8xl font-black text-black text-center mb-2 tracking-tight font-impact'>
-                    HEALTHY FOCUS
+                <h1 
+                    className={`font-black text-[#2c2c2c] transition-all duration-[600ms] ease-out ${
+                        animationPhase === 'initial' 
+                            ? 'text-9xl' 
+                            : 'text-7xl'
+                    }`}
+                    style={{
+                        fontFamily: 'Bebas Neue, cursive'
+                    }}
+                >
+                    HealthyFocus
                 </h1>
             </div>
-            
-            <div className={`w-full text-center transition-all duration-500 ${
-                titleMoved ? 'opacity-100' : 'opacity-0'
-            }`}>
-                <p className='text-black font-bold text-lg mb-8 tracking-widest'>
-                    FOCUS ON WHATS MATTERS
-                </p>
-            </div>
 
-            <div className={`flex justify-center items-start transition-all duration-500 ${
-                titleMoved ? 'opacity-100' : 'opacity-0'
+            {/* Contenido principal (aparece después de la animación) */}
+            <div className={`flex h-screen transition-all duration-500 ${
+                animationPhase === 'complete' ? 'opacity-100' : 'opacity-0'
             }`}>
-                <div className='w-full flex items-center justify-between px-8'>
-                    <div className='w-full lg:w-1/2 max-w-lg mx-auto'>
+                {/* Left Side - Arquero */}
+                <div className='w-1/2 flex items-center justify-center p-2'>
+                    <img 
+                        src="/goalKeeper.png" 
+                        alt="Arquero apuntando al blanco" 
+                        className='w-full h-auto max-w-4xl'
+                    />
+                </div>
+                
+                {/* Right Side - Form */}
+                <div className="w-1/2 flex flex-col justify-center p-8">
+                    <div className="w-full max-w-lg mx-auto">
+                        <div className="text-center mb-8">
+                            <p className='text-[#666] text-xl'>
+                                Inicia sesión
+                            </p>
+                        </div>
+
                         <LoginForm />
-                    </div>
-                    
-                    <div className='hidden lg:block w-1/2 pl-12'>
-                        <img 
-                            src="/goalKeeper.png" 
-                            alt="Arquero apuntando al blanco" 
-                            className='w-full h-auto'
-                        />
                     </div>
                 </div>
             </div>

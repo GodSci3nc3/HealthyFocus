@@ -7,11 +7,8 @@ function Dashboard() {
     const [projects, setProjects] = useState([]);
     const [tasks, setTasks] = useState([]);
     const [notes, setNotes] = useState([]);
+    const [todayTask, setTodayTask] = useState(null);
     const [newNote, setNewNote] = useState({ title: '', content: '' });
-    const [newProject, setNewProject] = useState({ name: '', description: '' });
-    const [newTask, setNewTask] = useState({ title: '', description: '', projectId: '', priority: 'media' });
-    const [showProjectModal, setShowProjectModal] = useState(false);
-    const [showTaskModal, setShowTaskModal] = useState(false);
     
     const router = useRouter();
 
@@ -40,8 +37,14 @@ function Dashboard() {
             const notesData = await notesRes.json();
 
             setProjects(projectsData.projects || []);
-            setTasks(tasksData.tasks || []);
+            const allTasks = tasksData.tasks || [];
+            setTasks(allTasks);
             setNotes(notesData.notes || []);
+
+            // Seleccionar tarea del día (primera pendiente o en proceso)
+            const mainTask = allTasks.find(task => task.status === 'en_proceso') || 
+                           allTasks.find(task => task.status === 'pendiente');
+            setTodayTask(mainTask);
         } catch (error) {
             console.log('Error cargando datos:', error);
         }
@@ -70,23 +73,19 @@ function Dashboard() {
         }
     };
 
-    const createProject = async () => {
-        if (!newProject.name.trim()) return;
-
+    const createQuickProject = async () => {
         try {
             const response = await fetch('/api/projects', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: newProject.name,
-                    description: newProject.description,
+                    name: 'Sin nombre',
+                    description: '',
                     userId: user.id
                 })
             });
 
             if (response.ok) {
-                setNewProject({ name: '', description: '' });
-                setShowProjectModal(false);
                 loadData(user.id);
             }
         } catch (error) {
@@ -94,29 +93,162 @@ function Dashboard() {
         }
     };
 
-    const createTask = async () => {
-        if (!newTask.title.trim() || !newTask.projectId) return;
+    const createQuickTask = async () => {
+        // Buscar el primer proyecto disponible
+        if (projects.length === 0) {
+            alert('Primero debes crear un proyecto');
+            return;
+        }
 
         try {
             const response = await fetch('/api/tasks', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    title: newTask.title,
-                    description: newTask.description,
-                    projectId: parseInt(newTask.projectId),
-                    priority: newTask.priority,
+                    title: 'Sin nombre',
+                    description: '',
+                    projectId: projects[0].id,
+                    priority: 'media',
                     userId: user.id
                 })
             });
 
             if (response.ok) {
-                setNewTask({ title: '', description: '', projectId: '', priority: 'media' });
-                setShowTaskModal(false);
                 loadData(user.id);
             }
         } catch (error) {
             console.log('Error creando tarea:', error);
+        }
+    };
+
+    const createQuickTaskForProject = async (projectId) => {
+        try {
+            const response = await fetch('/api/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: 'Sin nombre',
+                    description: '',
+                    projectId: projectId,
+                    priority: 'media',
+                    userId: user.id
+                })
+            });
+
+            if (response.ok) {
+                loadData(user.id);
+            }
+        } catch (error) {
+            console.log('Error creando tarea:', error);
+        }
+    };
+
+    const createQuickNote = async () => {
+        try {
+            const response = await fetch('/api/notes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: 'Nueva nota',
+                    content: 'Escribe aquí...',
+                    userId: user.id
+                })
+            });
+
+            if (response.ok) {
+                loadData(user.id);
+            }
+        } catch (error) {
+            console.log('Error creando nota:', error);
+        }
+    };
+
+    const updateProjectField = (projectId, field, value) => {
+        setProjects(prev => prev.map(project => 
+            project.id === projectId ? { ...project, [field]: value } : project
+        ));
+    };
+
+    const updateTaskField = (taskId, field, value) => {
+        setTasks(prev => prev.map(task => 
+            task.id === taskId ? { ...task, [field]: value } : task
+        ));
+    };
+
+    const saveProject = async (projectId) => {
+        const project = projects.find(p => p.id === projectId);
+        if (!project) return;
+
+        try {
+            await fetch('/api/projects', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: projectId,
+                    name: project.name,
+                    description: project.description
+                })
+            });
+        } catch (error) {
+            console.log('Error guardando proyecto:', error);
+        }
+    };
+
+    const saveTask = async (taskId) => {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        try {
+            await fetch('/api/tasks', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: taskId,
+                    title: task.title,
+                    description: task.description,
+                    priority: task.priority
+                })
+            });
+        } catch (error) {
+            console.log('Error guardando tarea:', error);
+        }
+    };
+
+    const deleteProject = async (projectId) => {
+        if (!confirm('¿Estás seguro de eliminar este proyecto y todas sus tareas?')) return;
+
+        try {
+            await fetch(`/api/projects?id=${projectId}`, {
+                method: 'DELETE'
+            });
+            loadData(user.id);
+        } catch (error) {
+            console.log('Error eliminando proyecto:', error);
+        }
+    };
+
+    const updateNoteField = (noteId, field, value) => {
+        setNotes(prev => prev.map(note => 
+            note.id === noteId ? { ...note, [field]: value } : note
+        ));
+    };
+
+    const saveNote = async (noteId) => {
+        const note = notes.find(n => n.id === noteId);
+        if (!note) return;
+
+        try {
+            await fetch('/api/notes', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: noteId,
+                    title: note.title,
+                    content: note.content
+                })
+            });
+        } catch (error) {
+            console.log('Error guardando nota:', error);
         }
     };
 
@@ -153,238 +285,316 @@ function Dashboard() {
         }
     };
 
+    const setMainTask = (task) => {
+        setTodayTask(task);
+        if (task.status === 'pendiente') {
+            updateTaskStatus(task.id, 'en_proceso');
+        }
+    };
+
     if (!user) return <div>Cargando...</div>;
 
     return (
-        <div className='min-h-screen bg-gradient-radial from-[#ff5757] to-[#9e005d] p-6'>
-            <div className='max-w-7xl mx-auto'>
-                <h1 className='text-4xl font-black text-black text-center mb-8 font-impact'>
-                    ¡Hola, {user.name}!
-                </h1>
+        <div className='min-h-screen bg-gradient-radial from-[#ff5757] to-[#9e005d] flex'>
+            {/* Main Content - 75% */}
+            <div className='flex-1 p-6'>
+                <div className='max-w-4xl mx-auto'>
+                    <h1 className='text-5xl font-black text-black text-center mb-8 font-bebas-neue tracking-wider flex items-center justify-center gap-3'>
+                        <i className="fas fa-bullseye text-6xl"></i>
+                        Enfoque de hoy
+                    </h1>
 
-                <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-                    <div className='bg-yellow-100 rounded-lg p-4'>
-                        <h2 className='text-xl font-bold text-black mb-4'>📝 Notas Rápidas</h2>
-                        
-                        <div className='mb-4'>
-                            <input
-                                type="text"
-                                placeholder="Título de la nota"
-                                value={newNote.title}
-                                onChange={(e) => setNewNote({...newNote, title: e.target.value})}
-                                className='w-full p-2 rounded mb-2 text-black'
-                            />
-                            <textarea
-                                placeholder="Contenido..."
-                                value={newNote.content}
-                                onChange={(e) => setNewNote({...newNote, content: e.target.value})}
-                                className='w-full p-2 rounded mb-2 text-black'
-                                rows="3"
-                            />
-                            <button
-                                onClick={createNote}
-                                className='w-full bg-yellow-500 text-black font-bold py-2 rounded hover:bg-yellow-600'
-                            >
-                                Crear Nota
-                            </button>
-                        </div>
-
-                        <div className='space-y-2 max-h-96 overflow-y-auto'>
-                            {notes.map(note => (
-                                <div key={note.id} className='bg-yellow-200 p-3 rounded'>
-                                    <h3 className='font-bold text-black'>{note.title}</h3>
-                                    <p className='text-black text-sm'>{note.content}</p>
+                    {/* Tarea del Día */}
+                    <div className='bg-black/20 backdrop-blur-sm rounded-2xl p-8 mb-8 min-h-[400px] flex flex-col justify-center items-center text-center'>
+                        {todayTask ? (
+                            <div>
+                                <h2 className='text-4xl font-bebas-neue tracking-wide text-black mb-4'>
+                                    {todayTask.title}
+                                </h2>
+                                <p className='text-lg text-black/80 mb-6'>
+                                    {todayTask.description || 'Sin descripción'}
+                                </p>
+                                <p className='text-sm text-black/60 mb-6'>
+                                    Proyecto: {todayTask.project_name}
+                                </p>
+                                <div className='flex gap-4 justify-center'>
                                     <button
-                                        onClick={() => deleteNote(note.id)}
-                                        className='text-red-600 text-xs mt-1 hover:underline'
+                                        onClick={() => updateTaskStatus(todayTask.id, 'completada')}
+                                        className='bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold flex items-center gap-2'
                                     >
-                                        Eliminar
+                                        <i className="fas fa-check"></i>
+                                        Completar
+                                    </button>
+                                    <button
+                                        onClick={() => setTodayTask(null)}
+                                        className='bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold flex items-center gap-2'
+                                    >
+                                        <i className="fas fa-sync"></i>
+                                        Cambiar tarea
                                     </button>
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className='bg-blue-100 rounded-lg p-4'>
-                        <div className='flex justify-between items-center mb-4'>
-                            <h2 className='text-xl font-bold text-black'>📂 Proyectos</h2>
-                            <button
-                                onClick={() => setShowProjectModal(true)}
-                                className='bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600'
-                            >
-                                + Nuevo
-                            </button>
-                        </div>
-
-                        <div className='space-y-3 max-h-96 overflow-y-auto'>
-                            {projects.map(project => {
-                                const projectTasks = tasks.filter(task => task.project_id === project.id);
-                                const completedTasks = projectTasks.filter(task => task.status === 'completada');
-                                const progress = projectTasks.length > 0 ? (completedTasks.length / projectTasks.length) * 100 : 0;
-
-                                return (
-                                    <div key={project.id} className='bg-blue-200 p-3 rounded'>
-                                        <h3 className='font-bold text-black'>{project.name}</h3>
-                                        <p className='text-black text-sm'>{project.description}</p>
-                                        <div className='mt-2'>
-                                            <div className='bg-blue-300 rounded-full h-2'>
-                                                <div 
-                                                    className='bg-blue-600 h-2 rounded-full'
-                                                    style={{width: `${progress}%`}}
-                                                ></div>
-                                            </div>
-                                            <p className='text-xs text-black mt-1'>
-                                                {completedTasks.length}/{projectTasks.length} tareas completadas
-                                            </p>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    <div className='bg-green-100 rounded-lg p-4'>
-                        <div className='flex justify-between items-center mb-4'>
-                            <h2 className='text-xl font-bold text-black'>✅ Tareas</h2>
-                            <button
-                                onClick={() => setShowTaskModal(true)}
-                                className='bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600'
-                            >
-                                + Nueva
-                            </button>
-                        </div>
-
-                        <div className='space-y-2 max-h-96 overflow-y-auto'>
-                            {tasks.map(task => (
-                                <div 
-                                    key={task.id} 
-                                    className={`p-3 rounded ${
-                                        task.status === 'completada' ? 'bg-green-300' : 
-                                        task.status === 'en_proceso' ? 'bg-yellow-200' : 'bg-gray-200'
-                                    }`}
-                                >
-                                    <h3 className='font-bold text-black'>{task.title}</h3>
-                                    <p className='text-black text-sm'>{task.description}</p>
-                                    <p className='text-xs text-gray-600'>Proyecto: {task.project_name}</p>
-                                    <div className='mt-2 flex gap-1'>
-                                        <button
-                                            onClick={() => updateTaskStatus(task.id, 'pendiente')}
-                                            className='text-xs bg-gray-500 text-white px-2 py-1 rounded'
-                                        >
-                                            Pendiente
-                                        </button>
-                                        <button
-                                            onClick={() => updateTaskStatus(task.id, 'en_proceso')}
-                                            className='text-xs bg-yellow-500 text-white px-2 py-1 rounded'
-                                        >
-                                            En Proceso
-                                        </button>
-                                        <button
-                                            onClick={() => updateTaskStatus(task.id, 'completada')}
-                                            className='text-xs bg-green-500 text-white px-2 py-1 rounded'
-                                        >
-                                            Completada
-                                        </button>
-                                    </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <h2 className='text-3xl font-bebas-neue tracking-wide text-black mb-4'>
+                                    Selecciona tu enfoque de hoy
+                                </h2>
+                                <p className='text-black/80 mb-6'>
+                                    Elige una tarea para concentrarte
+                                </p>
+                                <div className='flex items-center gap-2 text-red-600'>
+                                    <i className="fas fa-arrow-down text-2xl"></i>
+                                    <span className='font-bold'>Haz click en una tarea de abajo</span>
                                 </div>
-                            ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Datatable - Proyectos y Tareas */}
+                    <div className='bg-white/15 backdrop-blur-sm rounded-xl p-6 mb-4 shadow-lg'>
+                        <div className='flex justify-between items-center mb-6'>
+                            <h3 className='text-3xl font-bebas-neue tracking-wide text-black flex items-center gap-3'>
+                                <i className="fas fa-list text-2xl"></i>
+                                Proyectos y tareas
+                            </h3>
+                            <div className='flex gap-3'>
+                                <button
+                                    onClick={createQuickProject}
+                                    className='bg-red-600 text-white p-3 rounded-lg hover:bg-red-700 transition-all duration-200 shadow-md'
+                                    title="Nuevo Proyecto"
+                                >
+                                    <i className="fas fa-folder-plus text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className='overflow-x-auto max-h-[500px] overflow-y-auto bg-white/10 rounded-lg'>
+                            <table className='w-full text-base font-bebas-neue'>
+                                <thead className='bg-red-900/30 sticky top-0'>
+                                    <tr>
+                                        <th className='text-left p-4 text-black font-bold tracking-wide'>Tipo</th>
+                                        <th className='text-left p-4 text-black font-bold tracking-wide'>Nombre</th>
+                                        <th className='text-left p-4 text-black font-bold tracking-wide'>Descripción</th>
+                                        <th className='text-left p-4 text-black font-bold tracking-wide'>Estado</th>
+                                        <th className='text-left p-4 text-black font-bold tracking-wide'>Info</th>
+                                        <th className='text-left p-4 text-black font-bold tracking-wide'>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {projects.map(project => {
+                                        const projectTasks = tasks.filter(task => task.project_id === project.id);
+                                        const completedTasks = projectTasks.filter(task => task.status === 'completada');
+                                        const progress = projectTasks.length > 0 ? (completedTasks.length / projectTasks.length) * 100 : 0;
+                                        
+                                        return [
+                                            <tr key={`project-${project.id}`} className='bg-red-600/25 border-b border-red-600/40 hover:bg-red-600/30 transition-all'>
+                                                <td className='p-4'>
+                                                    <span className='bg-red-700 text-white px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 w-fit'>
+                                                        <i className="fas fa-folder"></i>
+                                                        Proyecto
+                                                    </span>
+                                                </td>
+                                                <td className='p-4'>
+                                                    <input
+                                                        type="text"
+                                                        value={project.name}
+                                                        onChange={(e) => updateProjectField(project.id, 'name', e.target.value)}
+                                                        onBlur={() => saveProject(project.id)}
+                                                        className='bg-transparent text-black font-bold border-none outline-none w-full text-lg placeholder-black/50'
+                                                    />
+                                                </td>
+                                                <td className='p-4'>
+                                                    <input
+                                                        type="text"
+                                                        value={project.description || ''}
+                                                        onChange={(e) => updateProjectField(project.id, 'description', e.target.value)}
+                                                        onBlur={() => saveProject(project.id)}
+                                                        className='bg-transparent text-black/80 border-none outline-none w-full placeholder-black/40'
+                                                        placeholder="Sin descripción"
+                                                    />
+                                                </td>
+                                                <td className='p-4'>
+                                                    <div className='bg-black/30 rounded-full h-3 w-24'>
+                                                        <div 
+                                                            className='bg-red-600 h-3 rounded-full transition-all duration-300'
+                                                            style={{width: `${progress}%`}}
+                                                        ></div>
+                                                    </div>
+                                                    <span className='text-sm text-black/70 font-bold'>{Math.round(progress)}%</span>
+                                                </td>
+                                                <td className='p-4'>
+                                                    <span className='text-sm text-black/70 font-bold'>{projectTasks.length} tareas</span>
+                                                </td>
+                                                <td className='p-4'>
+                                                    <div className='flex gap-2'>
+                                                        <button
+                                                            onClick={() => createQuickTaskForProject(project.id)}
+                                                            className='text-green-600 hover:text-green-800 p-1'
+                                                            title="Nueva tarea"
+                                                        >
+                                                            <i className="fas fa-plus-circle text-xl"></i>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => deleteProject(project.id)}
+                                                            className='text-red-600 hover:text-red-800 p-1'
+                                                            title="Eliminar proyecto"
+                                                        >
+                                                            <i className="fas fa-trash text-lg"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>,
+                                            ...projectTasks.map(task => (
+                                                <tr key={`task-${task.id}`} className='bg-white/15 border-b border-white/30 hover:bg-white/25 cursor-pointer transition-all' onClick={() => setMainTask(task)}>
+                                                    <td className='p-4 pl-8'>
+                                                        <span className='bg-red-800 text-white px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 w-fit'>
+                                                            <i className="fas fa-tasks"></i>
+                                                            Tarea
+                                                        </span>
+                                                    </td>
+                                                    <td className='p-4'>
+                                                        <input
+                                                            type="text"
+                                                            value={task.title}
+                                                            onChange={(e) => updateTaskField(task.id, 'title', e.target.value)}
+                                                            onBlur={() => saveTask(task.id)}
+                                                            className='bg-transparent text-black font-semibold border-none outline-none w-full text-lg placeholder-black/50'
+                                                            onClick={(e) => e.stopPropagation()}
+                                                        />
+                                                    </td>
+                                                    <td className='p-4'>
+                                                        <input
+                                                            type="text"
+                                                            value={task.description || ''}
+                                                            onChange={(e) => updateTaskField(task.id, 'description', e.target.value)}
+                                                            onBlur={() => saveTask(task.id)}
+                                                            className='bg-transparent text-black/80 border-none outline-none w-full placeholder-black/40'
+                                                            placeholder="Sin descripción"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                        />
+                                                    </td>
+                                                    <td className='p-4' onClick={(e) => e.stopPropagation()}>
+                                                        <div className="relative">
+                                                            <select
+                                                                value={task.status}
+                                                                onChange={(e) => updateTaskStatus(task.id, e.target.value)}
+                                                                className={`appearance-none px-3 py-2 rounded-lg text-sm font-bold text-white cursor-pointer border-none outline-none ${
+                                                                    task.status === 'completada' ? 'bg-green-600' : 
+                                                                    task.status === 'en_proceso' ? 'bg-yellow-600' : 'bg-gray-600'
+                                                                }`}
+                                                            >
+                                                                <option value="pendiente">Pendiente</option>
+                                                                <option value="en_proceso">En proceso</option>
+                                                                <option value="completada">Completada</option>
+                                                            </select>
+                                                            <i className="fas fa-chevron-down absolute right-2 top-3 text-white text-xs pointer-events-none"></i>
+                                                        </div>
+                                                    </td>
+                                                    <td className='p-4' onClick={(e) => e.stopPropagation()}>
+                                                        <div className="relative">
+                                                            <select
+                                                                value={task.priority}
+                                                                onChange={(e) => updateTaskField(task.id, 'priority', e.target.value)}
+                                                                onBlur={() => saveTask(task.id)}
+                                                                className={`appearance-none px-3 py-2 rounded-lg text-sm font-bold text-white cursor-pointer border-none outline-none ${
+                                                                    task.priority === 'alta' ? 'bg-red-600' : 
+                                                                    task.priority === 'media' ? 'bg-orange-600' : 'bg-blue-600'
+                                                                }`}
+                                                            >
+                                                                <option value="baja">Baja</option>
+                                                                <option value="media">Media</option>
+                                                                <option value="alta">Alta</option>
+                                                            </select>
+                                                            <i className="fas fa-chevron-down absolute right-2 top-3 text-white text-xs pointer-events-none"></i>
+                                                        </div>
+                                                    </td>
+                                                    <td className='p-4'>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                deleteTask(task.id);
+                                                            }}
+                                                            className='text-red-600 hover:text-red-800 p-1'
+                                                            title="Eliminar tarea"
+                                                        >
+                                                            <i className="fas fa-trash text-lg"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ];
+                                    })}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {showProjectModal && (
-                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4'>
-                    <div className='bg-white rounded-lg p-6 w-full max-w-md'>
-                        <h3 className='text-xl font-bold mb-4'>Nuevo Proyecto</h3>
-                        <input
-                            type="text"
-                            placeholder="Nombre del proyecto"
-                            value={newProject.name}
-                            onChange={(e) => setNewProject({...newProject, name: e.target.value})}
-                            className='w-full p-3 border rounded mb-3'
-                        />
-                        <textarea
-                            placeholder="Descripción..."
-                            value={newProject.description}
-                            onChange={(e) => setNewProject({...newProject, description: e.target.value})}
-                            className='w-full p-3 border rounded mb-4'
-                            rows="3"
-                        />
-                        <div className='flex gap-2'>
-                            <button
-                                onClick={createProject}
-                                className='flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600'
-                            >
-                                Crear
-                            </button>
-                            <button
-                                onClick={() => setShowProjectModal(false)}
-                                className='flex-1 bg-gray-500 text-white py-2 rounded hover:bg-gray-600'
-                            >
-                                Cancelar
-                            </button>
-                        </div>
-                    </div>
+            {/* Sidebar Notas - 25% */}
+            <div className='w-1/4 bg-black/10 backdrop-blur-sm p-4 border-l border-black/20'>
+                <div className='flex justify-between items-center mb-6'>
+                    <h3 className='text-2xl font-bebas-neue tracking-wide text-black flex items-center gap-2'>
+                        <i className="fas fa-sticky-note text-xl"></i>
+                        Notas rápidas
+                    </h3>
+                    <button
+                        onClick={createQuickNote}
+                        className='bg-yellow-500 text-black p-2 rounded-lg hover:bg-yellow-600 transition-all duration-200 shadow-md'
+                        title="Nueva nota"
+                    >
+                        <i className="fas fa-plus text-lg"></i>
+                    </button>
                 </div>
-            )}
 
-            {showTaskModal && (
-                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4'>
-                    <div className='bg-white rounded-lg p-6 w-full max-w-md'>
-                        <h3 className='text-xl font-bold mb-4'>Nueva Tarea</h3>
-                        <input
-                            type="text"
-                            placeholder="Título de la tarea"
-                            value={newTask.title}
-                            onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-                            className='w-full p-3 border rounded mb-3'
-                        />
-                        <textarea
-                            placeholder="Descripción..."
-                            value={newTask.description}
-                            onChange={(e) => setNewTask({...newTask, description: e.target.value})}
-                            className='w-full p-3 border rounded mb-3'
-                            rows="2"
-                        />
-                        <select
-                            value={newTask.projectId}
-                            onChange={(e) => setNewTask({...newTask, projectId: e.target.value})}
-                            className='w-full p-3 border rounded mb-3'
-                        >
-                            <option value="">Seleccionar proyecto</option>
-                            {projects.map(project => (
-                                <option key={project.id} value={project.id}>
-                                    {project.name}
-                                </option>
-                            ))}
-                        </select>
-                        <select
-                            value={newTask.priority}
-                            onChange={(e) => setNewTask({...newTask, priority: e.target.value})}
-                            className='w-full p-3 border rounded mb-4'
-                        >
-                            <option value="baja">Prioridad Baja</option>
-                            <option value="media">Prioridad Media</option>
-                            <option value="alta">Prioridad Alta</option>
-                        </select>
-                        <div className='flex gap-2'>
-                            <button
-                                onClick={createTask}
-                                className='flex-1 bg-green-500 text-white py-2 rounded hover:bg-green-600'
-                            >
-                                Crear
-                            </button>
-                            <button
-                                onClick={() => setShowTaskModal(false)}
-                                className='flex-1 bg-gray-500 text-white py-2 rounded hover:bg-gray-600'
-                            >
-                                Cancelar
-                            </button>
-                        </div>
-                    </div>
+                {/* Lista de Notas Post-it */}
+                <div className='space-y-3 overflow-y-auto max-h-96'>
+                    {notes.map((note, index) => {
+                        const postItColors = [
+                            'bg-yellow-200 border-yellow-300',
+                            'bg-pink-200 border-pink-300', 
+                            'bg-blue-200 border-blue-300',
+                            'bg-green-200 border-green-300',
+                            'bg-orange-200 border-orange-300'
+                        ];
+                        const colorClass = postItColors[index % postItColors.length];
+                        
+                        return (
+                            <div key={note.id} className={`${colorClass} p-4 rounded-lg border-2 shadow-md transform hover:rotate-1 transition-all duration-200 relative`}>
+                                <button
+                                    onClick={() => deleteNote(note.id)}
+                                    className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 shadow-md'
+                                    title="Eliminar nota"
+                                >
+                                    <i className="fas fa-times"></i>
+                                </button>
+                                
+                                <input
+                                    type="text"
+                                    value={note.title}
+                                    onChange={(e) => updateNoteField(note.id, 'title', e.target.value)}
+                                    onBlur={() => saveNote(note.id)}
+                                    className='bg-transparent text-black font-bold border-none outline-none w-full text-lg placeholder-black/50 mb-2'
+                                    placeholder="Título"
+                                />
+                                
+                                <textarea
+                                    value={note.content}
+                                    onChange={(e) => updateNoteField(note.id, 'content', e.target.value)}
+                                    onBlur={() => saveNote(note.id)}
+                                    className='bg-transparent text-black/80 border-none outline-none w-full resize-none placeholder-black/40'
+                                    placeholder="Contenido..."
+                                    rows="3"
+                                />
+                                
+                                <div className='flex justify-end mt-2'>
+                                    <i className="fas fa-thumbtack text-gray-600 text-sm"></i>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
-            )}
+            </div>
         </div>
     );
 }

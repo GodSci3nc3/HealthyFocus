@@ -1,7 +1,7 @@
 # HealthyFocus - Digital Wellness Platform
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/807e9781-5139-42c8-9fef-d97f174f6ea8" alt="HealthyFocus Platform" style="width: 600px; height: 600px;">
+  <img src="https://github.com/user-attachments/assets/44a8c36c-3781-42bf-9bc0-09e420f54fe2" alt="HealthyFocus Platform" style="width: 600px; height: 600px;">
   
   <p align="center">
     <strong>A comprehensive web platform designed to help users manage their digital device time efficiently through personalized wellness tracking and intelligent recommendations.</strong>

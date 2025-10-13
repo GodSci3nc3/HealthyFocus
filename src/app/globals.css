@@ -1,5 +1,10 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Impact&family=Bebas+Neue:wght@400&display=swap');
 
-body {
-    @apply bg-gray-950;
+.bg-gradient-radial {
+    background: radial-gradient(circle at center, #ff5757 0%, #9e005d 100%);
+}
+
+.font-impact {
+    font-family: 'Bebas Neue', 'Impact', sans-serif;
 }

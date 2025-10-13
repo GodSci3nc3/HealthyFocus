@@ -7,8 +7,9 @@ function Dashboard() {
     const [projects, setProjects] = useState([]);
     const [tasks, setTasks] = useState([]);
     const [notes, setNotes] = useState([]);
-    const [todayTask, setTodayTask] = useState(null);
+    const [todaysFocus, setTodaysFocus] = useState('');
     const [newNote, setNewNote] = useState({ title: '', content: '' });
+    const [isAnimationComplete, setIsAnimationComplete] = useState(false);
     
     const router = useRouter();
 
@@ -22,6 +23,11 @@ function Dashboard() {
         const currentUser = JSON.parse(userData);
         setUser(currentUser);
         loadData(currentUser.id);
+        
+        // Iniciar animación de bienvenida
+        setTimeout(() => {
+            setIsAnimationComplete(true);
+        }, 2000);
     }, []);
 
     const loadData = async (userId) => {
@@ -295,296 +301,259 @@ function Dashboard() {
     if (!user) return <div>Cargando...</div>;
 
     return (
-        <div className='min-h-screen bg-[#faf8f5] flex'>
-            {/* Main Content - 75% */}
-            <div className='flex-1 p-8'>
-                <div className='max-w-5xl mx-auto'>
-                    <h1 
-                        className='text-5xl font-black text-[#2c2c2c] text-center mb-8'
-                        style={{
-                            fontFamily: 'Bebas Neue, cursive'
-                        }}
-                    >
-                        Enfoque de Hoy
-                    </h1>
+        <div className='min-h-screen bg-[#faf8f5]'>
+            {/* Mensaje de Bienvenida - Animación Práctica 7 */}
+            <h1 
+                className={`text-[#2c2c2c] font-semibold text-center mb-8 transition-all duration-[600ms] ease-out ${
+                    isAnimationComplete 
+                    ? 'text-4xl transform translate-y-0 scale-100' 
+                    : 'text-7xl transform translate-y-[40vh] scale-150'
+                }`}
+                style={{
+                    fontFamily: 'Bebas Neue, cursive'
+                }}
+            >
+                ¡Bienvenido, {user?.name || 'Usuario'}!
+            </h1>
 
-                    {/* Tarea del Día */}
-                                        {/* Tarea del Día */}
-                    <div className='bg-white rounded-lg p-8 mb-8 min-h-[300px] flex flex-col justify-center items-center text-center border border-[#e5e5e5]'>
-                        {todayTask ? (
-                            <div>
-                                <h2 className='text-4xl font-semibold text-[#2c2c2c] mb-4' style={{fontFamily: 'Bebas Neue, cursive'}}>
-                                    {todayTask.title}
-                                </h2>
-                                <p className='text-lg text-[#666] mb-6'>
-                                    {todayTask.description || 'Sin descripción'}
-                                </p>
-                                <p className='text-sm text-[#666] mb-6'>
-                                    Proyecto: {todayTask.project_name}
-                                </p>
-                                <div className='flex gap-4 justify-center'>
+            {/* Layout Principal - Práctica 7 */}
+            <div className={`flex gap-8 max-w-7xl mx-auto px-6 transition-opacity duration-[600ms] delay-[1700ms] ${
+                isAnimationComplete ? 'opacity-100' : 'opacity-0'
+            }`}>
+                {/* Contenido Principal */}
+                <div className='flex-1'>
+                    {/* Enfoque de Hoy - Reemplaza el formulario de tareas */}
+                    <div className={`bg-white p-6 rounded-lg shadow-lg mb-8 border border-[#e5e5e5] transition-all duration-[600ms] delay-[1700ms] ${
+                        isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+                    }`}>
+                        <h2 className='text-[#2c2c2c] font-semibold mb-4 text-xl' style={{fontFamily: 'Bebas Neue, cursive'}}>
+                            Enfoque de Hoy
+                        </h2>
+                        <div className='min-h-[200px] flex items-center justify-center'>
+                            {todaysFocus ? (
+                                <div className='text-center'>
+                                    <h3 className='text-3xl font-medium text-[#2c2c2c] mb-4' style={{fontFamily: 'Bebas Neue, cursive'}}>
+                                        {todaysFocus}
+                                    </h3>
                                     <button
-                                        onClick={() => updateTaskStatus(todayTask.id, 'completada')}
-                                        className='bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-medium transition-all duration-300'
+                                        onClick={() => setTodaysFocus('')}
+                                        className='bg-[#2c2c2c] text-white px-6 py-2 rounded-lg hover:opacity-90 transition-all duration-300 font-medium'
                                     >
-                                        Completar
-                                    </button>
-                                    <button
-                                        onClick={() => setTodayTask(null)}
-                                        className='bg-[#2c2c2c] text-white px-6 py-3 rounded-lg hover:bg-[#1a1a1a] font-medium transition-all duration-300'
-                                    >
-                                        Cambiar tarea
+                                        Cambiar Enfoque
                                     </button>
                                 </div>
-                            </div>
-                        ) : (
-                            <div>
-                                <h2 className='text-3xl font-semibold text-[#2c2c2c] mb-4' style={{fontFamily: 'Bebas Neue, cursive'}}>
-                                    Selecciona tu enfoque de hoy
-                                </h2>
-                                <p className='text-[#666] mb-6'>
-                                    Elige una tarea para concentrarte
-                                </p>
-                                <p className='text-sm text-[#666]'>
-                                    Crea una tarea en la tabla de abajo o selecciona una existente
-                                </p>
-                            </div>
-                        )}
+                            ) : (
+                                <div className='text-center'>
+                                    <h3 className='text-2xl font-medium text-[#666] mb-4' style={{fontFamily: 'Bebas Neue, cursive'}}>
+                                        Define tu enfoque del día
+                                    </h3>
+                                    <input
+                                        type="text"
+                                        value={todaysFocus}
+                                        onChange={(e) => setTodaysFocus(e.target.value)}
+                                        placeholder="¿En qué te vas a enfocar hoy?"
+                                        className='w-full max-w-md px-4 py-3 border border-[#e5e5e5] rounded-lg focus:outline-none focus:border-[#2c2c2c] transition-all duration-300 text-center'
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    {/* Datatable - Proyectos y Tareas */}
-                    <div className='bg-white rounded-lg p-6 mb-4 border border-[#e5e5e5]'>
-                        <div className='flex justify-between items-center mb-6'>
-                            <h3 className='text-3xl font-semibold text-[#2c2c2c]' style={{fontFamily: 'Bebas Neue, cursive'}}>
-                                Proyectos y Tareas
-                            </h3>
-                            <button
-                                onClick={createQuickProject}
-                                className='bg-[#2c2c2c] text-white px-4 py-2 rounded-lg hover:bg-[#1a1a1a] transition-all duration-300 font-medium'
-                                title="Nuevo Proyecto"
-                            >
-                                + Proyecto
-                            </button>
-                        </div>
-
-                        <div className='overflow-x-auto max-h-[400px] overflow-y-auto bg-[#faf8f5] rounded-lg border border-[#e5e5e5]'>
+                    {/* Tabla Principal - Estilo Práctica 7 */}
+                    <div className={`bg-white rounded-lg shadow-lg overflow-hidden border border-[#e5e5e5] mb-4 transition-all duration-[600ms] delay-[1900ms] ${
+                        isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+                    }`}>
+                        <div className='overflow-x-auto'>
                             <table className='w-full text-sm'>
-                                <thead className='bg-[#2c2c2c] text-white sticky top-0'>
-                                    <tr>
-                                        <th className='text-left p-4 font-medium'>Tipo</th>
-                                        <th className='text-left p-4 font-medium'>Nombre</th>
-                                        <th className='text-left p-4 font-medium'>Descripción</th>
-                                        <th className='text-left p-4 font-medium'>Estado</th>
-                                        <th className='text-left p-4 text-black font-bold tracking-wide'>Info</th>
-                                        <th className='text-left p-4 text-black font-bold tracking-wide'>Acción</th>
+                                <thead>
+                                    <tr className='bg-[#f8f9fa] border-b border-[#e5e5e5]'>
+                                        <th className='text-left p-3 font-semibold text-[#2c2c2c] w-1/4'>Título</th>
+                                        <th className='text-left p-3 font-semibold text-[#2c2c2c] w-1/3'>Descripción</th>
+                                        <th className='text-left p-3 font-semibold text-[#2c2c2c] w-1/6'>Estado</th>
+                                        <th className='text-left p-3 font-semibold text-[#2c2c2c] w-1/6'>Prioridad</th>
+                                        <th className='text-left p-3 font-semibold text-[#2c2c2c] w-1/12'>Vencimiento</th>
+                                        <th className='text-left p-3 font-semibold text-[#2c2c2c] w-1/12'>Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {projects.map(project => {
                                         const projectTasks = tasks.filter(task => task.project_id === project.id);
-                                        const completedTasks = projectTasks.filter(task => task.status === 'completada');
-                                        const progress = projectTasks.length > 0 ? (completedTasks.length / projectTasks.length) * 100 : 0;
                                         
                                         return [
-                                            <tr key={`project-${project.id}`} className='bg-white border-b border-[#e5e5e5] hover:bg-gray-50 transition-all duration-300'>
-                                                <td className='p-4'>
-                                                    <span className='bg-[#2c2c2c] text-white px-3 py-1 rounded text-xs font-medium'>
-                                                        Proyecto
-                                                    </span>
-                                                </td>
-                                                <td className='p-4'>
+                                            <tr key={`project-${project.id}`} className='bg-[#e9ecef] border-b border-[#e5e5e5]'>
+                                                <td colSpan="5" className='p-3'>
                                                     <input
                                                         type="text"
                                                         value={project.name}
                                                         onChange={(e) => updateProjectField(project.id, 'name', e.target.value)}
                                                         onBlur={() => saveProject(project.id)}
-                                                        className='bg-transparent text-[#2c2c2c] font-medium border-none outline-none w-full placeholder-[#666]'
+                                                        className='bg-transparent font-semibold text-[#2c2c2c] border-none outline-none w-full'
+                                                        style={{fontFamily: 'Bebas Neue, cursive'}}
                                                     />
                                                 </td>
-                                                <td className='p-4'>
-                                                    <input
-                                                        type="text"
-                                                        value={project.description || ''}
-                                                        onChange={(e) => updateProjectField(project.id, 'description', e.target.value)}
-                                                        onBlur={() => saveProject(project.id)}
-                                                        className='bg-transparent text-[#666] border-none outline-none w-full placeholder-[#666]'
-                                                        placeholder="Sin descripción"
-                                                    />
-                                                </td>
-                                                <td className='p-4'>
-                                                    <div className='bg-[#e5e5e5] rounded-full h-2 w-20'>
-                                                        <div 
-                                                            className='bg-[#2c2c2c] h-2 rounded-full transition-all duration-300'
-                                                            style={{width: `${progress}%`}}
-                                                        ></div>
-                                                    </div>
-                                                    <span className='text-xs text-[#666] mt-1 block'>{Math.round(progress)}%</span>
-                                                </td>
-                                                <td className='p-4'>
-                                                    <span className='text-sm text-[#666]'>{projectTasks.length} tareas</span>
-                                                </td>
-                                                <td className='p-4'>
-                                                    <div className='flex gap-2'>
-                                                        <button
-                                                            onClick={() => createQuickTaskForProject(project.id)}
-                                                            className='text-green-600 hover:text-green-800 transition-colors duration-300 font-bold text-lg'
-                                                            title="Nueva tarea"
-                                                        >
-                                                            +
-                                                        </button>
-                                                        <button
-                                                            onClick={() => deleteProject(project.id)}
-                                                            className='text-red-600 hover:text-red-800 transition-colors duration-300 font-bold text-lg'
-                                                            title="Eliminar proyecto"
-                                                        >
-                                                            ×
-                                                        </button>
-                                                    </div>
+                                                <td className='p-3'>
+                                                    <button
+                                                        onClick={() => deleteProject(project.id)}
+                                                        className='text-red-600 hover:text-red-800 transition-colors duration-300'
+                                                        title="Eliminar proyecto"
+                                                    >
+                                                        <i className="fas fa-folder-minus"></i>
+                                                    </button>
                                                 </td>
                                             </tr>,
                                             ...projectTasks.map(task => (
-                                                <tr key={`task-${task.id}`} className='bg-white border-b border-gray-200 hover:bg-gray-50 cursor-pointer transition-all duration-300' onClick={() => setMainTask(task)}>
-                                                    <td className='p-4 pl-8'>
-                                                        <span className='bg-gray-600 text-white px-2 py-1 rounded text-xs font-semibold'>
-                                                            Tarea
-                                                        </span>
-                                                    </td>
-                                                    <td className='p-4'>
+                                                <tr key={`task-${task.id}`} className='border-b border-[#e5e5e5] hover:bg-[#f8f9fa] transition-colors duration-300'>
+                                                    <td className='p-3'>
                                                         <input
                                                             type="text"
                                                             value={task.title}
                                                             onChange={(e) => updateTaskField(task.id, 'title', e.target.value)}
                                                             onBlur={() => saveTask(task.id)}
-                                                            className='bg-transparent text-black font-semibold border-none outline-none w-full text-lg placeholder-black/50'
-                                                            onClick={(e) => e.stopPropagation()}
+                                                            className='bg-transparent text-[#2c2c2c] border-none outline-none w-full'
                                                         />
                                                     </td>
-                                                    <td className='p-4'>
+                                                    <td className='p-3'>
                                                         <input
                                                             type="text"
                                                             value={task.description || ''}
                                                             onChange={(e) => updateTaskField(task.id, 'description', e.target.value)}
                                                             onBlur={() => saveTask(task.id)}
-                                                            className='bg-transparent text-black/80 border-none outline-none w-full placeholder-black/40'
+                                                            className='bg-transparent text-[#666] border-none outline-none w-full'
                                                             placeholder="Sin descripción"
-                                                            onClick={(e) => e.stopPropagation()}
                                                         />
                                                     </td>
-                                                    <td className='p-4' onClick={(e) => e.stopPropagation()}>
-                                                        <div className="relative">
-                                                            <select
-                                                                value={task.status}
-                                                                onChange={(e) => updateTaskStatus(task.id, e.target.value)}
-                                                                className={`appearance-none px-3 py-2 rounded-lg text-sm font-bold text-white cursor-pointer border-none outline-none ${
-                                                                    task.status === 'completada' ? 'bg-green-600' : 
-                                                                    task.status === 'en_proceso' ? 'bg-yellow-600' : 'bg-gray-600'
-                                                                }`}
-                                                            >
-                                                                <option value="pendiente">Pendiente</option>
-                                                                <option value="en_proceso">En proceso</option>
-                                                                <option value="completada">Completada</option>
-                                                            </select>
-                                                            <i className="fas fa-chevron-down absolute right-2 top-3 text-white text-xs pointer-events-none"></i>
-                                                        </div>
+                                                    <td className='p-3'>
+                                                        <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                                                            task.status === 'completada' ? 'bg-green-100 text-green-800' : 
+                                                            task.status === 'en_proceso' ? 'bg-yellow-100 text-yellow-800' : 
+                                                            'bg-gray-100 text-gray-800'
+                                                        }`}>
+                                                            {task.status === 'completada' ? 'Hecha' : 
+                                                             task.status === 'en_proceso' ? 'En Proceso' : 'Pendiente'}
+                                                        </span>
                                                     </td>
-                                                    <td className='p-4' onClick={(e) => e.stopPropagation()}>
-                                                        <div className="relative">
-                                                            <select
-                                                                value={task.priority}
-                                                                onChange={(e) => updateTaskField(task.id, 'priority', e.target.value)}
-                                                                onBlur={() => saveTask(task.id)}
-                                                                className={`appearance-none px-3 py-2 rounded-lg text-sm font-bold text-white cursor-pointer border-none outline-none ${
-                                                                    task.priority === 'alta' ? 'bg-red-600' : 
-                                                                    task.priority === 'media' ? 'bg-orange-600' : 'bg-blue-600'
-                                                                }`}
-                                                            >
-                                                                <option value="baja">Baja</option>
-                                                                <option value="media">Media</option>
-                                                                <option value="alta">Alta</option>
-                                                            </select>
-                                                            <i className="fas fa-chevron-down absolute right-2 top-3 text-white text-xs pointer-events-none"></i>
-                                                        </div>
+                                                    <td className='p-3'>
+                                                        <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                                                            task.priority === 'alta' ? 'bg-red-100 text-red-800' : 
+                                                            task.priority === 'media' ? 'bg-orange-100 text-orange-800' : 
+                                                            'bg-blue-100 text-blue-800'
+                                                        }`}>
+                                                            {task.priority === 'alta' ? 'Alta' : 
+                                                             task.priority === 'media' ? 'Media' : 'Baja'}
+                                                        </span>
                                                     </td>
-                                                    <td className='p-4'>
+                                                    <td className='p-3 text-[#666]'>
+                                                        {task.due_date || '-'}
+                                                    </td>
+                                                    <td className='p-3'>
                                                         <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                deleteTask(task.id);
-                                                            }}
-                                                            className='text-red-600 hover:text-red-800 p-1'
+                                                            onClick={() => deleteTask(task.id)}
+                                                            className='text-red-600 hover:text-red-800 transition-colors duration-300'
                                                             title="Eliminar tarea"
                                                         >
-                                                            <i className="fas fa-trash text-lg"></i>
+                                                            <i className="fas fa-trash"></i>
                                                         </button>
                                                     </td>
                                                 </tr>
                                             ))
                                         ];
                                     })}
+                                    {projects.length === 0 && (
+                                        <tr>
+                                            <td colSpan="6" className='text-center text-[#666] p-8'>
+                                                No hay proyectos creados
+                                            </td>
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
+                    {/* Botón Crear Proyecto */}
+                    <button
+                        onClick={createQuickProject}
+                        className={`w-full bg-transparent border-2 border-[#e5e5e5] text-[#2c2c2c] py-3 rounded-lg hover:bg-[#f8f9fa] transition-all duration-[600ms] font-medium mb-4 delay-[2100ms] ${
+                            isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+                        }`}
+                    >
+                        <i className="fas fa-plus mr-2"></i>Crear Proyecto
+                    </button>
+                </div>
+
+                {/* Sidebar Notas - Estilo Práctica 7 */}
+                <div className={`w-80 flex-shrink-0 transition-all duration-[600ms] delay-[2100ms] ${
+                    isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+                }`}>
+                    <h3 className='text-[#2c2c2c] font-semibold mb-4 pb-2 border-b border-[#e5e5e5]' style={{fontFamily: 'Bebas Neue, cursive'}}>
+                        Notas
+                    </h3>
+                    
+                    {/* Botón Crear Nota */}
+                    <button
+                        onClick={createQuickNote}
+                        className='w-full bg-yellow-100 border border-yellow-300 text-[#2c2c2c] font-medium py-3 rounded-lg hover:bg-yellow-200 transition-all duration-300 mb-4'
+                    >
+                        <i className="fas fa-sticky-note mr-2"></i>Crear Nota
+                    </button>
+
+                    {/* Lista de Notas Post-it */}
+                    <div className='space-y-3 overflow-y-auto max-h-96'>
+                        {notes.map((note, index) => {
+                            const postItColors = [
+                                'bg-yellow-100 border-yellow-300',
+                                'bg-blue-100 border-blue-300', 
+                                'bg-green-100 border-green-300',
+                                'bg-pink-100 border-pink-300',
+                                'bg-orange-100 border-orange-300'
+                            ];
+                            const colorClass = postItColors[index % postItColors.length];
+                            
+                            return (
+                                <div key={note.id} className={`${colorClass} p-3 rounded-lg border-2 shadow-sm hover:shadow-md transition-all duration-300 relative`}>
+                                    <button
+                                        onClick={() => deleteNote(note.id)}
+                                        className='absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors duration-300'
+                                        title="Eliminar nota"
+                                    >
+                                        ×
+                                    </button>
+                                    
+                                    <input
+                                        type="text"
+                                        value={note.title}
+                                        onChange={(e) => updateNoteField(note.id, 'title', e.target.value)}
+                                        onBlur={() => saveNote(note.id)}
+                                        className='bg-transparent text-[#2c2c2c] font-medium border-none outline-none w-full text-sm placeholder-[#666] mb-2'
+                                        placeholder="Título de la nota"
+                                    />
+                                    
+                                    <textarea
+                                        value={note.content}
+                                        onChange={(e) => updateNoteField(note.id, 'content', e.target.value)}
+                                        onBlur={() => saveNote(note.id)}
+                                        className='bg-transparent text-[#2c2c2c] border-none outline-none w-full resize-none placeholder-[#666] text-xs'
+                                        placeholder="Escribe tu nota aquí..."
+                                        rows="3"
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
-            {/* Sidebar Notas - 25% */}
-            <div className='w-1/4 bg-white p-6 border-l border-[#e5e5e5]'>
-                <h3 className='text-2xl font-semibold text-[#2c2c2c] mb-6' style={{fontFamily: 'Bebas Neue, cursive'}}>
-                    Notas Rápidas
-                </h3>
-                
-                {/* Botón Crear Nota */}
+            {/* Botón Cerrar Sesión - Estilo Práctica 7 */}
+            <div className='fixed bottom-4 left-4'>
                 <button
-                    onClick={createQuickNote}
-                    className='w-full bg-[#2c2c2c] text-white font-medium py-3 rounded-lg hover:bg-[#1a1a1a] transition-all duration-300 mb-6'
+                    onClick={() => {
+                        localStorage.removeItem('currentUser');
+                        router.push('/login');
+                    }}
+                    className='text-[#666] hover:text-[#2c2c2c] transition-colors duration-300 text-sm'
                 >
-                    + Nueva Nota
+                    Cerrar Sesión
                 </button>
-
-                {/* Lista de Notas Post-it */}
-                <div className='space-y-3 overflow-y-auto max-h-96'>
-                    {notes.map((note, index) => {
-                        const postItColors = [
-                            'bg-yellow-200 border-yellow-300',
-                            'bg-blue-200 border-blue-300', 
-                            'bg-green-200 border-green-300',
-                            'bg-pink-200 border-pink-300',
-                            'bg-orange-200 border-orange-300'
-                        ];
-                        const colorClass = postItColors[index % postItColors.length];
-                        
-                        return (
-                            <div key={note.id} className={`${colorClass} p-4 rounded-lg border-2 shadow-sm hover:shadow-md transition-all duration-300 relative transform hover:-rotate-1`}>
-                                <button
-                                    onClick={() => deleteNote(note.id)}
-                                    className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition-colors duration-300'
-                                    title="Eliminar nota"
-                                >
-                                    ×
-                                </button>
-                                
-                                <input
-                                    type="text"
-                                    value={note.title}
-                                    onChange={(e) => updateNoteField(note.id, 'title', e.target.value)}
-                                    onBlur={() => saveNote(note.id)}
-                                    className='bg-transparent text-[#2c2c2c] font-medium border-none outline-none w-full text-sm placeholder-[#666] mb-2'
-                                    placeholder="Título"
-                                />
-                                
-                                <textarea
-                                    value={note.content}
-                                    onChange={(e) => updateNoteField(note.id, 'content', e.target.value)}
-                                    onBlur={() => saveNote(note.id)}
-                                    className='bg-transparent text-[#2c2c2c] border-none outline-none w-full resize-none placeholder-[#666] text-xs'
-                                    placeholder="Escribe tu nota..."
-                                    rows="3"
-                                />
-                            </div>
-                        );
-                    })}
-                </div>
             </div>
         </div>
     );

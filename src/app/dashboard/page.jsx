@@ -313,9 +313,6 @@ function Dashboard() {
                         ? 'text-4xl transform translate-y-0 scale-100' 
                         : 'text-7xl transform translate-y-[40vh] scale-150'
                     }`}
-                    style={{
-                        fontFamily: 'Bebas Neue, cursive'
-                    }}
                 >
                     ¡Bienvenido, {user?.name || 'Usuario'}!
                 </h1>
@@ -414,7 +411,7 @@ function Dashboard() {
                                         const projectTasks = tasks.filter(task => task.project_id === project.id);
                                         
                                         return [
-                                            <tr key={`project-${project.id}`} className='bg-gradient-to-r from-[#f1f3f4] to-[#e9ecef] border-b-2 border-[#d1ecf1] hover:from-[#e3f2fd] hover:to-[#f1f8e9] transition-all duration-300'>
+                                            <tr key={`project-${project.id}`} className='bg-[#f8f9fa] border-b-2 border-[#e5e5e5] hover:bg-[#f1f3f4] transition-all duration-300'>
                                                 <td colSpan="5" className='p-4'>
                                                     <div className='flex items-center gap-3'>
                                                         <div className='w-8 h-8 bg-[#2c2c2c] rounded-lg flex items-center justify-center'>
@@ -543,16 +540,14 @@ function Dashboard() {
                         }`}
                     >
                         <div className='flex items-center justify-center gap-3'>
-                            <div className='w-6 h-6 bg-white bg-opacity-20 rounded-lg flex items-center justify-center'>
-                                <i className="fas fa-plus text-sm"></i>
-                            </div>
+                            <span className='text-xl font-bold'>+</span>
                             Crear Nuevo Proyecto
                         </div>
                     </button>
                 </div>
 
                 {/* Sidebar Notas - Estilo Práctica 7 */}
-                <div className={`w-80 flex-shrink-0 transition-all duration-[600ms] delay-[2100ms] ${
+                <div className={`w-96 flex-shrink-0 transition-all duration-[600ms] delay-[2100ms] ${
                     isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
                 }`}>
                     <h3 className='text-[#2c2c2c] font-semibold mb-4 pb-2 border-b border-[#e5e5e5]'>
@@ -607,14 +602,14 @@ function Dashboard() {
                 </div>
             </div>
 
-                {/* Botón Cerrar Sesión - Estilo Práctica 7 */}
-                <div className='fixed bottom-4 left-4'>
+                {/* Botón Cerrar Sesión - Esquina Superior Derecha */}
+                <div className='fixed top-4 right-4'>
                     <button
                         onClick={() => {
                             localStorage.removeItem('currentUser');
                             router.push('/login');
                         }}
-                        className='text-[#666] hover:text-[#2c2c2c] transition-colors duration-300 text-sm'
+                        className='bg-white border border-[#e5e5e5] text-[#666] hover:text-[#2c2c2c] hover:border-[#2c2c2c] px-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-md'
                     >
                         Cerrar Sesión
                     </button>

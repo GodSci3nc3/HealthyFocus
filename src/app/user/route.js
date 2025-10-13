@@ -6,14 +6,12 @@ export async function POST(request){
 try {
     const {name, email, password, age} = await request.json();
 
-    const result = await connection.query("INSERT INTO users SET ?", 
-    {
-        name: name,
-        email: email,
-        password: password,
-        age: age
-    }
-    );
+    const result = await connection.query("INSERT INTO users SET ?", {
+        name,
+        email,
+        password,
+        age
+    });
 
     console.log(result);
 

@@ -1,5 +1,7 @@
 "use client"
 import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import axios from 'axios';
 
 function RegisterForm() {
@@ -11,6 +13,7 @@ function RegisterForm() {
     });
 
     const form = useRef(null);
+    const router = useRouter();
 
     const handleChange = (e) => {
         setUser({
@@ -21,13 +24,21 @@ function RegisterForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const res = await axios.post('/user', user);
-        console.log(res);
+        
+        try {
+            const res = await axios.post('/user', user);
+            console.log('Registro exitoso:', res);
+            router.push('/login');
+        } catch (error) {
+            console.log('Error en registro:', error);
+        }
+        
         form.current.reset();
     }
 
     return (
-        <form className='px-8 py-10 w-full' onSubmit={handleSubmit} ref={form}>
+        <div>
+            <form className='px-8 py-10 w-full' onSubmit={handleSubmit} ref={form}>
             <div className='mb-6'>
                 <label htmlFor="name" className='block text-black text-base font-bold mb-2'>
                     Nombre de usuario
@@ -91,6 +102,16 @@ function RegisterForm() {
                 Registrarse
             </button>
         </form>
+        
+        <div className='text-center'>
+            <p className='text-black text-base'>
+                ¿Ya tienes cuenta?{' '}
+                <Link href="/login" className='font-bold underline hover:text-gray-700 transition-colors'>
+                    Inicia sesión aquí
+                </Link>
+            </p>
+        </div>
+    </div>
     );
 }
 

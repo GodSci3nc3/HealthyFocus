@@ -6,6 +6,7 @@ export const connection = mysql ({
         user: 'arthur',
         password: '25355',
         port: 3306,
-        database: 'healthyfocus'
+        database: 'healthyfocus',
+        socketPath: '/var/run/mysqld/mysqld.sock'
     }
 })

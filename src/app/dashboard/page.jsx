@@ -303,25 +303,27 @@ function Dashboard() {
     if (!user) return <div>Cargando...</div>;
 
     return (
-        <div className='min-h-screen bg-[#faf8f5]'>
-            {/* Mensaje de Bienvenida - Animación Práctica 7 */}
-            <h1 
-                className={`text-[#2c2c2c] font-semibold text-center mb-12 transition-all duration-[600ms] ease-out ${
-                    isAnimationComplete 
-                    ? 'text-4xl transform translate-y-0 scale-100' 
-                    : 'text-7xl transform translate-y-[40vh] scale-150'
-                }`}
-                style={{
-                    fontFamily: 'Bebas Neue, cursive'
-                }}
-            >
-                ¡Bienvenido, {user?.name || 'Usuario'}!
-            </h1>
+        <div className='min-h-screen bg-[#faf8f5] overflow-hidden'>
+            {/* Contenedor principal con mejor espaciado */}
+            <div className='pt-16 px-6'>
+                {/* Mensaje de Bienvenida - Animación Práctica 7 */}
+                <h1 
+                    className={`text-[#2c2c2c] font-semibold text-center mb-12 transition-all duration-[600ms] ease-out ${
+                        isAnimationComplete 
+                        ? 'text-4xl transform translate-y-0 scale-100' 
+                        : 'text-7xl transform translate-y-[40vh] scale-150'
+                    }`}
+                    style={{
+                        fontFamily: 'Bebas Neue, cursive'
+                    }}
+                >
+                    ¡Bienvenido, {user?.name || 'Usuario'}!
+                </h1>
 
-            {/* Layout Principal - Práctica 7 */}
-            <div className={`flex gap-8 max-w-7xl mx-auto px-6 transition-opacity duration-[600ms] delay-[1700ms] ${
-                isAnimationComplete ? 'opacity-100' : 'opacity-0'
-            }`}>
+                {/* Layout Principal - Práctica 7 */}
+                <div className={`flex gap-8 max-w-7xl mx-auto transition-opacity duration-[600ms] delay-[1700ms] ${
+                    isAnimationComplete ? 'opacity-100' : 'opacity-0'
+                }`}>
                 {/* Contenido Principal */}
                 <div className='flex-1'>
                     {/* Enfoque de Hoy - Reemplaza el formulario de tareas */}
@@ -361,20 +363,50 @@ function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Tabla Principal - Estilo Práctica 7 */}
-                    <div className={`bg-white rounded-lg shadow-lg overflow-hidden border border-[#e5e5e5] mb-4 transition-all duration-[600ms] delay-[1900ms] ${
+                    {/* Tabla Principal - Enhanced Elegante */}
+                    <div className={`bg-white rounded-xl shadow-xl border border-[#e5e5e5] mb-4 transition-all duration-[600ms] delay-[1900ms] overflow-hidden ${
                         isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
                     }`}>
-                        <div className='overflow-x-auto'>
+                        <div className='overflow-x-auto max-h-[500px] overflow-y-auto'>
                             <table className='w-full text-base'>
-                                <thead>
-                                    <tr className='bg-[#f8f9fa] border-b border-[#e5e5e5]'>
-                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/4'>Título</th>
-                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/3'>Descripción</th>
-                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/6'>Estado</th>
-                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/6'>Prioridad</th>
-                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/12'>Vencimiento</th>
-                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/12'>Acción</th>
+                                <thead className='sticky top-0 bg-white z-10'>
+                                    <tr className='bg-gradient-to-r from-[#f8f9fa] to-[#e9ecef] border-b-2 border-[#e5e5e5]'>
+                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/4'>
+                                            <div className='flex items-center gap-2'>
+                                                <i className="fas fa-tasks text-sm text-[#666]"></i>
+                                                Título
+                                            </div>
+                                        </th>
+                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/3'>
+                                            <div className='flex items-center gap-2'>
+                                                <i className="fas fa-align-left text-sm text-[#666]"></i>
+                                                Descripción
+                                            </div>
+                                        </th>
+                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/6'>
+                                            <div className='flex items-center gap-2'>
+                                                <i className="fas fa-circle-notch text-sm text-[#666]"></i>
+                                                Estado
+                                            </div>
+                                        </th>
+                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/6'>
+                                            <div className='flex items-center gap-2'>
+                                                <i className="fas fa-flag text-sm text-[#666]"></i>
+                                                Prioridad
+                                            </div>
+                                        </th>
+                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/12'>
+                                            <div className='flex items-center gap-2'>
+                                                <i className="fas fa-calendar text-sm text-[#666]"></i>
+                                                Vencimiento
+                                            </div>
+                                        </th>
+                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/12'>
+                                            <div className='flex items-center gap-2'>
+                                                <i className="fas fa-cog text-sm text-[#666]"></i>
+                                                Acción
+                                            </div>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -382,36 +414,49 @@ function Dashboard() {
                                         const projectTasks = tasks.filter(task => task.project_id === project.id);
                                         
                                         return [
-                                            <tr key={`project-${project.id}`} className='bg-[#e9ecef] border-b border-[#e5e5e5]'>
+                                            <tr key={`project-${project.id}`} className='bg-gradient-to-r from-[#f1f3f4] to-[#e9ecef] border-b-2 border-[#d1ecf1] hover:from-[#e3f2fd] hover:to-[#f1f8e9] transition-all duration-300'>
                                                 <td colSpan="5" className='p-4'>
-                                                    <input
-                                                        type="text"
-                                                        value={project.name}
-                                                        onChange={(e) => updateProjectField(project.id, 'name', e.target.value)}
-                                                        onBlur={() => saveProject(project.id)}
-                                                        className='bg-transparent font-semibold text-[#2c2c2c] border-none outline-none w-full text-base'
-                                                    />
+                                                    <div className='flex items-center gap-3'>
+                                                        <div className='w-8 h-8 bg-[#2c2c2c] rounded-lg flex items-center justify-center'>
+                                                            <i className="fas fa-folder text-white text-sm"></i>
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            value={project.name}
+                                                            onChange={(e) => updateProjectField(project.id, 'name', e.target.value)}
+                                                            onBlur={() => saveProject(project.id)}
+                                                            className='bg-transparent font-bold text-[#2c2c2c] border-none outline-none flex-1 text-lg'
+                                                            placeholder="Nombre del proyecto"
+                                                        />
+                                                    </div>
                                                 </td>
                                                 <td className='p-4'>
                                                     <button
                                                         onClick={() => deleteProject(project.id)}
-                                                        className='text-red-600 hover:text-red-800 transition-colors duration-300'
+                                                        className='w-8 h-8 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 rounded-lg flex items-center justify-center transition-all duration-300 hover:shadow-md'
                                                         title="Eliminar proyecto"
                                                     >
-                                                        <i className="fas fa-folder-minus"></i>
+                                                        <i className="fas fa-trash text-sm"></i>
                                                     </button>
                                                 </td>
                                             </tr>,
                                             ...projectTasks.map(task => (
-                                                <tr key={`task-${task.id}`} className='border-b border-[#e5e5e5] hover:bg-[#f8f9fa] transition-colors duration-300'>
-                                                    <td className='p-4'>
-                                                        <input
-                                                            type="text"
-                                                            value={task.title}
-                                                            onChange={(e) => updateTaskField(task.id, 'title', e.target.value)}
-                                                            onBlur={() => saveTask(task.id)}
-                                                            className='bg-transparent text-[#2c2c2c] border-none outline-none w-full text-base font-medium'
-                                                        />
+                                                <tr key={`task-${task.id}`} className='border-b border-[#f0f0f0] hover:bg-[#fafbfc] transition-all duration-300 group'>
+                                                    <td className='p-4 pl-12'>
+                                                        <div className='flex items-center gap-3'>
+                                                            <div className={`w-3 h-3 rounded-full ${
+                                                                task.status === 'completada' ? 'bg-green-500' : 
+                                                                task.status === 'en_proceso' ? 'bg-yellow-500' : 'bg-gray-400'
+                                                            }`}></div>
+                                                            <input
+                                                                type="text"
+                                                                value={task.title}
+                                                                onChange={(e) => updateTaskField(task.id, 'title', e.target.value)}
+                                                                onBlur={() => saveTask(task.id)}
+                                                                className='bg-transparent text-[#2c2c2c] border-none outline-none flex-1 text-base font-medium'
+                                                                placeholder="Nombre de la tarea"
+                                                            />
+                                                        </div>
                                                     </td>
                                                     <td className='p-4'>
                                                         <input
@@ -420,39 +465,50 @@ function Dashboard() {
                                                             onChange={(e) => updateTaskField(task.id, 'description', e.target.value)}
                                                             onBlur={() => saveTask(task.id)}
                                                             className='bg-transparent text-[#666] border-none outline-none w-full text-base'
-                                                            placeholder="Sin descripción"
+                                                            placeholder="Descripción..."
                                                         />
                                                     </td>
                                                     <td className='p-4'>
-                                                        <span className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                                                            task.status === 'completada' ? 'bg-green-100 text-green-800' : 
-                                                            task.status === 'en_proceso' ? 'bg-yellow-100 text-yellow-800' : 
-                                                            'bg-gray-100 text-gray-800'
+                                                        <div className={`inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium border ${
+                                                            task.status === 'completada' ? 'bg-green-50 text-green-700 border-green-200' : 
+                                                            task.status === 'en_proceso' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 
+                                                            'bg-gray-50 text-gray-700 border-gray-200'
                                                         }`}>
-                                                            {task.status === 'completada' ? 'Hecha' : 
+                                                            <i className={`fas text-xs ${
+                                                                task.status === 'completada' ? 'fa-check' : 
+                                                                task.status === 'en_proceso' ? 'fa-clock' : 'fa-pause'
+                                                            }`}></i>
+                                                            {task.status === 'completada' ? 'Completada' : 
                                                              task.status === 'en_proceso' ? 'En Proceso' : 'Pendiente'}
-                                                        </span>
+                                                        </div>
                                                     </td>
                                                     <td className='p-4'>
-                                                        <span className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                                                            task.priority === 'alta' ? 'bg-red-100 text-red-800' : 
-                                                            task.priority === 'media' ? 'bg-orange-100 text-orange-800' : 
-                                                            'bg-blue-100 text-blue-800'
+                                                        <div className={`inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium border ${
+                                                            task.priority === 'alta' ? 'bg-red-50 text-red-700 border-red-200' : 
+                                                            task.priority === 'media' ? 'bg-orange-50 text-orange-700 border-orange-200' : 
+                                                            'bg-blue-50 text-blue-700 border-blue-200'
                                                         }`}>
+                                                            <i className={`fas text-xs ${
+                                                                task.priority === 'alta' ? 'fa-exclamation' : 
+                                                                task.priority === 'media' ? 'fa-minus' : 'fa-arrow-down'
+                                                            }`}></i>
                                                             {task.priority === 'alta' ? 'Alta' : 
                                                              task.priority === 'media' ? 'Media' : 'Baja'}
-                                                        </span>
+                                                        </div>
                                                     </td>
                                                     <td className='p-4 text-[#666] text-base'>
-                                                        {task.due_date || '-'}
+                                                        <div className='flex items-center gap-2'>
+                                                            <i className="fas fa-calendar-alt text-xs text-[#999]"></i>
+                                                            {task.due_date || 'Sin fecha'}
+                                                        </div>
                                                     </td>
                                                     <td className='p-4'>
                                                         <button
                                                             onClick={() => deleteTask(task.id)}
-                                                            className='text-red-600 hover:text-red-800 transition-colors duration-300'
+                                                            className='w-8 h-8 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 rounded-lg flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100'
                                                             title="Eliminar tarea"
                                                         >
-                                                            <i className="fas fa-trash"></i>
+                                                            <i className="fas fa-trash text-sm"></i>
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -461,8 +517,16 @@ function Dashboard() {
                                     })}
                                     {projects.length === 0 && (
                                         <tr>
-                                            <td colSpan="6" className='text-center text-[#666] p-8'>
-                                                No hay proyectos creados
+                                            <td colSpan="6" className='text-center p-16'>
+                                                <div className='flex flex-col items-center gap-4'>
+                                                    <div className='w-16 h-16 bg-[#f8f9fa] rounded-full flex items-center justify-center'>
+                                                        <i className="fas fa-folder-plus text-2xl text-[#666]"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className='text-lg font-semibold text-[#2c2c2c] mb-2'>No hay proyectos aún</h3>
+                                                        <p className='text-[#666] text-base'>Crea tu primer proyecto para comenzar a organizar tus tareas</p>
+                                                    </div>
+                                                </div>
                                             </td>
                                         </tr>
                                     )}
@@ -471,14 +535,19 @@ function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Botón Crear Proyecto */}
+                    {/* Botón Crear Proyecto - Más Elegante */}
                     <button
                         onClick={createQuickProject}
-                        className={`w-full bg-transparent border-2 border-[#e5e5e5] text-[#2c2c2c] py-3 rounded-lg hover:bg-[#f8f9fa] transition-all duration-[600ms] font-medium mb-4 delay-[2100ms] ${
-                            isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+                        className={`w-full bg-gradient-to-r from-[#2c2c2c] to-[#404040] hover:from-[#1a1a1a] hover:to-[#2c2c2c] text-white py-4 rounded-xl font-medium mb-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] delay-[2100ms] ${
+                            isAnimationComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                         }`}
                     >
-                        <i className="fas fa-plus mr-2"></i>Crear Proyecto
+                        <div className='flex items-center justify-center gap-3'>
+                            <div className='w-6 h-6 bg-white bg-opacity-20 rounded-lg flex items-center justify-center'>
+                                <i className="fas fa-plus text-sm"></i>
+                            </div>
+                            Crear Nuevo Proyecto
+                        </div>
                     </button>
                 </div>
 
@@ -499,19 +568,19 @@ function Dashboard() {
                     </button>
 
                     {/* Lista de Notas Post-it */}
-                    <div className='space-y-3 overflow-y-auto max-h-96'>
+                    <div className='space-y-3 overflow-y-auto max-h-[600px]'>
                         {notes.map((note, index) => {
                             const rotations = ['rotate-[-1deg]', 'rotate-[1deg]', 'rotate-[-0.5deg]', 'rotate-[0.5deg]'];
                             const rotation = rotations[index % rotations.length];
                             
                             return (
-                                <div key={note.id} className={`bg-[#f8f9fa] border border-[#e5e5e5] p-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 relative transform ${rotation} hover:rotate-0 hover:scale-102 min-h-[140px]`}>
+                                <div key={note.id} className={`bg-[#f8f9fa] border border-[#e5e5e5] p-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 relative transform ${rotation} hover:rotate-0 hover:scale-102 min-h-[140px] group`}>
                                     <button
                                         onClick={() => deleteNote(note.id)}
-                                        className='absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors duration-300'
+                                        className='absolute top-2 right-2 text-red-400 hover:text-red-600 transition-all duration-300 opacity-0 group-hover:opacity-100 text-sm'
                                         title="Eliminar nota"
                                     >
-                                        ×
+                                        <i className="fas fa-trash"></i>
                                     </button>
                                     
                                     <input
@@ -538,17 +607,18 @@ function Dashboard() {
                 </div>
             </div>
 
-            {/* Botón Cerrar Sesión - Estilo Práctica 7 */}
-            <div className='fixed bottom-4 left-4'>
-                <button
-                    onClick={() => {
-                        localStorage.removeItem('currentUser');
-                        router.push('/login');
-                    }}
-                    className='text-[#666] hover:text-[#2c2c2c] transition-colors duration-300 text-sm'
-                >
-                    Cerrar Sesión
-                </button>
+                {/* Botón Cerrar Sesión - Estilo Práctica 7 */}
+                <div className='fixed bottom-4 left-4'>
+                    <button
+                        onClick={() => {
+                            localStorage.removeItem('currentUser');
+                            router.push('/login');
+                        }}
+                        className='text-[#666] hover:text-[#2c2c2c] transition-colors duration-300 text-sm'
+                    >
+                        Cerrar Sesión
+                    </button>
+                </div>
             </div>
         </div>
     );

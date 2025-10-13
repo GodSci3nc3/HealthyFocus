@@ -54,13 +54,15 @@ function LoginForm() {
                         Email
                     </label>
                     <input 
-                        className='w-full px-5 py-4 border border-[#e5e5e5] rounded-lg focus:outline-none focus:border-[#2c2c2c] transition-all duration-300 text-lg bg-white' 
+                        className='w-full px-5 py-4 border border-[#e5e5e5] rounded-lg focus:outline-none focus:border-[#2c2c2c] transition-all duration-300 text-lg bg-white relative z-10' 
                         type="email" 
                         id="email" 
                         name="email" 
+                        value={user.email}
                         onChange={handleChange}
                         placeholder="tu@email.com"
                         required
+                        autoComplete="email"
                     />
                 </div>
 
@@ -69,13 +71,15 @@ function LoginForm() {
                         Contraseña
                     </label>
                     <input 
-                        className='w-full px-5 py-4 border border-[#e5e5e5] rounded-lg focus:outline-none focus:border-[#2c2c2c] transition-all duration-300 text-lg bg-white' 
+                        className='w-full px-5 py-4 border border-[#e5e5e5] rounded-lg focus:outline-none focus:border-[#2c2c2c] transition-all duration-300 text-lg bg-white relative z-10' 
                         type="password" 
                         id="password" 
                         name="password" 
+                        value={user.password}
                         onChange={handleChange}
                         placeholder="••••••••"
                         required
+                        autoComplete="current-password"
                     />
                 </div>
 

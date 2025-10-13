@@ -25,11 +25,11 @@ function LoginPage() {
     return (
         <div className="min-h-screen bg-[#faf8f5] relative overflow-hidden">
             {/* Título con animación centrada */}
-            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-[600ms] ease-out ${
+            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-[600ms] ease-out pointer-events-none ${
                 animationPhase === 'initial' 
                     ? 'transform translate-y-0' 
                     : 'transform -translate-y-[40vh]'
-            }`}>
+            } ${animationPhase === 'complete' ? 'hidden' : ''}`}>
                 <h1 
                     className={`font-black text-[#2c2c2c] transition-all duration-[600ms] ease-out ${
                         animationPhase === 'initial' 
@@ -58,7 +58,7 @@ function LoginPage() {
                 </div>
                 
                 {/* Right Side - Form */}
-                <div className="w-1/2 flex flex-col justify-center p-8">
+                <div className="w-1/2 flex flex-col justify-center p-8 relative z-20">
                     <div className="w-full max-w-lg mx-auto">
                         <div className="text-center mb-8">
                             <p className='text-[#666] text-xl'>

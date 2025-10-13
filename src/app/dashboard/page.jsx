@@ -10,6 +10,8 @@ function Dashboard() {
     const [todaysFocus, setTodaysFocus] = useState('');
     const [newNote, setNewNote] = useState({ title: '', content: '' });
     const [isAnimationComplete, setIsAnimationComplete] = useState(false);
+    const [draggedItem, setDraggedItem] = useState(null);
+    const [draggedType, setDraggedType] = useState(null);
     
     const router = useRouter();
 
@@ -304,7 +306,7 @@ function Dashboard() {
         <div className='min-h-screen bg-[#faf8f5]'>
             {/* Mensaje de Bienvenida - Animación Práctica 7 */}
             <h1 
-                className={`text-[#2c2c2c] font-semibold text-center mb-8 transition-all duration-[600ms] ease-out ${
+                className={`text-[#2c2c2c] font-semibold text-center mb-12 transition-all duration-[600ms] ease-out ${
                     isAnimationComplete 
                     ? 'text-4xl transform translate-y-0 scale-100' 
                     : 'text-7xl transform translate-y-[40vh] scale-150'
@@ -326,13 +328,13 @@ function Dashboard() {
                     <div className={`bg-white p-6 rounded-lg shadow-lg mb-8 border border-[#e5e5e5] transition-all duration-[600ms] delay-[1700ms] ${
                         isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
                     }`}>
-                        <h2 className='text-[#2c2c2c] font-semibold mb-4 text-xl' style={{fontFamily: 'Bebas Neue, cursive'}}>
-                            Enfoque de Hoy
+                        <h2 className='text-[#2c2c2c] font-semibold mb-4 text-xl'>
+                            Enfoque de hoy
                         </h2>
                         <div className='min-h-[200px] flex items-center justify-center'>
                             {todaysFocus ? (
                                 <div className='text-center'>
-                                    <h3 className='text-3xl font-medium text-[#2c2c2c] mb-4' style={{fontFamily: 'Bebas Neue, cursive'}}>
+                                    <h3 className='text-3xl font-medium text-[#2c2c2c] mb-4'>
                                         {todaysFocus}
                                     </h3>
                                     <button
@@ -344,7 +346,7 @@ function Dashboard() {
                                 </div>
                             ) : (
                                 <div className='text-center'>
-                                    <h3 className='text-2xl font-medium text-[#666] mb-4' style={{fontFamily: 'Bebas Neue, cursive'}}>
+                                    <h3 className='text-2xl font-medium text-[#666] mb-4'>
                                         Define tu enfoque del día
                                     </h3>
                                     <input
@@ -364,15 +366,15 @@ function Dashboard() {
                         isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
                     }`}>
                         <div className='overflow-x-auto'>
-                            <table className='w-full text-sm'>
+                            <table className='w-full text-base'>
                                 <thead>
                                     <tr className='bg-[#f8f9fa] border-b border-[#e5e5e5]'>
-                                        <th className='text-left p-3 font-semibold text-[#2c2c2c] w-1/4'>Título</th>
-                                        <th className='text-left p-3 font-semibold text-[#2c2c2c] w-1/3'>Descripción</th>
-                                        <th className='text-left p-3 font-semibold text-[#2c2c2c] w-1/6'>Estado</th>
-                                        <th className='text-left p-3 font-semibold text-[#2c2c2c] w-1/6'>Prioridad</th>
-                                        <th className='text-left p-3 font-semibold text-[#2c2c2c] w-1/12'>Vencimiento</th>
-                                        <th className='text-left p-3 font-semibold text-[#2c2c2c] w-1/12'>Acción</th>
+                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/4'>Título</th>
+                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/3'>Descripción</th>
+                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/6'>Estado</th>
+                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/6'>Prioridad</th>
+                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/12'>Vencimiento</th>
+                                        <th className='text-left p-4 font-semibold text-[#2c2c2c] w-1/12'>Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -381,17 +383,16 @@ function Dashboard() {
                                         
                                         return [
                                             <tr key={`project-${project.id}`} className='bg-[#e9ecef] border-b border-[#e5e5e5]'>
-                                                <td colSpan="5" className='p-3'>
+                                                <td colSpan="5" className='p-4'>
                                                     <input
                                                         type="text"
                                                         value={project.name}
                                                         onChange={(e) => updateProjectField(project.id, 'name', e.target.value)}
                                                         onBlur={() => saveProject(project.id)}
-                                                        className='bg-transparent font-semibold text-[#2c2c2c] border-none outline-none w-full'
-                                                        style={{fontFamily: 'Bebas Neue, cursive'}}
+                                                        className='bg-transparent font-semibold text-[#2c2c2c] border-none outline-none w-full text-base'
                                                     />
                                                 </td>
-                                                <td className='p-3'>
+                                                <td className='p-4'>
                                                     <button
                                                         onClick={() => deleteProject(project.id)}
                                                         className='text-red-600 hover:text-red-800 transition-colors duration-300'
@@ -403,27 +404,27 @@ function Dashboard() {
                                             </tr>,
                                             ...projectTasks.map(task => (
                                                 <tr key={`task-${task.id}`} className='border-b border-[#e5e5e5] hover:bg-[#f8f9fa] transition-colors duration-300'>
-                                                    <td className='p-3'>
+                                                    <td className='p-4'>
                                                         <input
                                                             type="text"
                                                             value={task.title}
                                                             onChange={(e) => updateTaskField(task.id, 'title', e.target.value)}
                                                             onBlur={() => saveTask(task.id)}
-                                                            className='bg-transparent text-[#2c2c2c] border-none outline-none w-full'
+                                                            className='bg-transparent text-[#2c2c2c] border-none outline-none w-full text-base font-medium'
                                                         />
                                                     </td>
-                                                    <td className='p-3'>
+                                                    <td className='p-4'>
                                                         <input
                                                             type="text"
                                                             value={task.description || ''}
                                                             onChange={(e) => updateTaskField(task.id, 'description', e.target.value)}
                                                             onBlur={() => saveTask(task.id)}
-                                                            className='bg-transparent text-[#666] border-none outline-none w-full'
+                                                            className='bg-transparent text-[#666] border-none outline-none w-full text-base'
                                                             placeholder="Sin descripción"
                                                         />
                                                     </td>
-                                                    <td className='p-3'>
-                                                        <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                                                    <td className='p-4'>
+                                                        <span className={`px-3 py-2 rounded-lg text-sm font-medium ${
                                                             task.status === 'completada' ? 'bg-green-100 text-green-800' : 
                                                             task.status === 'en_proceso' ? 'bg-yellow-100 text-yellow-800' : 
                                                             'bg-gray-100 text-gray-800'
@@ -432,8 +433,8 @@ function Dashboard() {
                                                              task.status === 'en_proceso' ? 'En Proceso' : 'Pendiente'}
                                                         </span>
                                                     </td>
-                                                    <td className='p-3'>
-                                                        <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                                                    <td className='p-4'>
+                                                        <span className={`px-3 py-2 rounded-lg text-sm font-medium ${
                                                             task.priority === 'alta' ? 'bg-red-100 text-red-800' : 
                                                             task.priority === 'media' ? 'bg-orange-100 text-orange-800' : 
                                                             'bg-blue-100 text-blue-800'
@@ -442,10 +443,10 @@ function Dashboard() {
                                                              task.priority === 'media' ? 'Media' : 'Baja'}
                                                         </span>
                                                     </td>
-                                                    <td className='p-3 text-[#666]'>
+                                                    <td className='p-4 text-[#666] text-base'>
                                                         {task.due_date || '-'}
                                                     </td>
-                                                    <td className='p-3'>
+                                                    <td className='p-4'>
                                                         <button
                                                             onClick={() => deleteTask(task.id)}
                                                             className='text-red-600 hover:text-red-800 transition-colors duration-300'
@@ -485,14 +486,14 @@ function Dashboard() {
                 <div className={`w-80 flex-shrink-0 transition-all duration-[600ms] delay-[2100ms] ${
                     isAnimationComplete ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
                 }`}>
-                    <h3 className='text-[#2c2c2c] font-semibold mb-4 pb-2 border-b border-[#e5e5e5]' style={{fontFamily: 'Bebas Neue, cursive'}}>
+                    <h3 className='text-[#2c2c2c] font-semibold mb-4 pb-2 border-b border-[#e5e5e5]'>
                         Notas
                     </h3>
                     
                     {/* Botón Crear Nota */}
                     <button
                         onClick={createQuickNote}
-                        className='w-full bg-yellow-100 border border-yellow-300 text-[#2c2c2c] font-medium py-3 rounded-lg hover:bg-yellow-200 transition-all duration-300 mb-4'
+                        className='inline-flex items-center text-[#2c2c2c] font-medium py-2 px-4 rounded-lg hover:bg-[#f8f9fa] transition-all duration-300 mb-4 border border-[#e5e5e5]'
                     >
                         <i className="fas fa-sticky-note mr-2"></i>Crear Nota
                     </button>
@@ -500,17 +501,11 @@ function Dashboard() {
                     {/* Lista de Notas Post-it */}
                     <div className='space-y-3 overflow-y-auto max-h-96'>
                         {notes.map((note, index) => {
-                            const postItColors = [
-                                'bg-yellow-100 border-yellow-300',
-                                'bg-blue-100 border-blue-300', 
-                                'bg-green-100 border-green-300',
-                                'bg-pink-100 border-pink-300',
-                                'bg-orange-100 border-orange-300'
-                            ];
-                            const colorClass = postItColors[index % postItColors.length];
+                            const rotations = ['rotate-[-1deg]', 'rotate-[1deg]', 'rotate-[-0.5deg]', 'rotate-[0.5deg]'];
+                            const rotation = rotations[index % rotations.length];
                             
                             return (
-                                <div key={note.id} className={`${colorClass} p-3 rounded-lg border-2 shadow-sm hover:shadow-md transition-all duration-300 relative`}>
+                                <div key={note.id} className={`bg-[#f8f9fa] border border-[#e5e5e5] p-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 relative transform ${rotation} hover:rotate-0 hover:scale-102 min-h-[140px]`}>
                                     <button
                                         onClick={() => deleteNote(note.id)}
                                         className='absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors duration-300'
@@ -524,7 +519,7 @@ function Dashboard() {
                                         value={note.title}
                                         onChange={(e) => updateNoteField(note.id, 'title', e.target.value)}
                                         onBlur={() => saveNote(note.id)}
-                                        className='bg-transparent text-[#2c2c2c] font-medium border-none outline-none w-full text-sm placeholder-[#666] mb-2'
+                                        className='bg-transparent text-[#2c2c2c] font-semibold border-none outline-none w-full text-sm placeholder-[#666] mb-2'
                                         placeholder="Título de la nota"
                                     />
                                     
@@ -532,9 +527,9 @@ function Dashboard() {
                                         value={note.content}
                                         onChange={(e) => updateNoteField(note.id, 'content', e.target.value)}
                                         onBlur={() => saveNote(note.id)}
-                                        className='bg-transparent text-[#2c2c2c] border-none outline-none w-full resize-none placeholder-[#666] text-xs'
+                                        className='bg-transparent text-[#2c2c2c] border-none outline-none w-full resize-none placeholder-[#666] text-xs leading-relaxed'
                                         placeholder="Escribe tu nota aquí..."
-                                        rows="3"
+                                        rows="4"
                                     />
                                 </div>
                             );

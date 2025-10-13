@@ -225,8 +225,6 @@ function Dashboard() {
     };
 
     const deleteProject = async (projectId) => {
-        if (!confirm('¿Estás seguro de eliminar este proyecto y todas sus tareas?')) return;
-
         try {
             await fetch(`/api/projects?id=${projectId}`, {
                 method: 'DELETE'
@@ -309,9 +307,7 @@ function Dashboard() {
         }
     };
 
-    const createTask = async (projectId, taskTitle) => {
-        if (!taskTitle.trim()) return;
-
+    const createTask = async (projectId) => {
         try {
             const response = await fetch('/api/tasks', {
                 method: 'POST',
@@ -319,12 +315,12 @@ function Dashboard() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    title: taskTitle,
+                    title: 'Sin nombre',
                     description: '',
                     status: 'pendiente',
-                    project_id: projectId,
-                    user_id: user.id,
-                    due_date: new Date()
+                    projectId: projectId,
+                    userId: user.id,
+                    due_date: new Date().toISOString().split('T')[0]
                 })
             });
 
@@ -631,10 +627,7 @@ function Dashboard() {
                                                 <td className='p-4'>
                                                     <div className='flex gap-2'>
                                                         <button
-                                                            onClick={() => {
-                                                                const taskTitle = prompt('Nombre de la nueva tarea:');
-                                                                if (taskTitle) createTask(project.id, taskTitle);
-                                                            }}
+                                                            onClick={() => createTask(project.id)}
                                                             className='w-8 h-8 bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 rounded-lg flex items-center justify-center transition-all duration-300 hover:shadow-md'
                                                             title="Añadir tarea"
                                                         >
@@ -786,7 +779,7 @@ function Dashboard() {
                     </button>
 
                     {/* Lista de Notas Post-it */}
-                    <div className='space-y-3 overflow-y-auto max-h-[600px]'>
+                    <div className='space-y-3 overflow-y-auto max-h-[600px] pr-2 pb-4'>
                         {notes.map((note, index) => {
                             const rotations = ['rotate-[-1deg]', 'rotate-[1deg]', 'rotate-[-0.5deg]', 'rotate-[0.5deg]'];
                             const rotation = rotations[index % rotations.length];
